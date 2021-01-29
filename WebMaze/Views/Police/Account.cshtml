@@ -22,10 +22,6 @@
         certificateCard.Link = Url.Action("SignUp", "Police");
     }
 }
-@section Scripts
-{
-    <script src="~/js/Police.js"></script>
-}
 
 <h2 class="mb-4">Тестовый личный кабинет пользователя @Model.ProfileVM.Login</h2>
 
@@ -64,22 +60,22 @@
                                 <h5 class="card-title">Последние преступления в городе</h5>
                             </div>
                             <div class="col-12">
-                                <ul class="list-group mb-3 violations-list-container">
-                                    <li class="text-right list-group-item list-group-item-action violation-list-item">
+                                <ul class="list-group mb-3 violation-container">
+                                    <li class="text-right list-group-item list-group-item-action violation-item">
                                         <div class="row">
-                                            <p class="col m-0 violation-user-field"></p>
-                                            <p class="col m-0 violation-policeman-field"></p>
-                                            <p class="col m-0 violation-date-field"></p>
+                                            <p class="col m-0 v-user"></p>
+                                            <p class="col m-0 v-policeman"></p>
+                                            <p class="col m-0 v-date"></p>
                                         </div>
-                                        <a class="stretched-link violation-link"></a>
+                                        <a class="stretched-link v-link"></a>
                                     </li>
                                 </ul>
                             </div>
-                            <div class="col-12 row justify-content-center">
+                            <div id="violation-not-found" class="col-12 row justify-content-center">
                                 <div class="col-12">
                                     <h5 class="text-center">Not Found</h5>
                                 </div>
-                                <div class="violation-not-found mb-3 col-6">
+                                <div class="mb-3 col-6">
                                     <img class="img-fluid" src="~/image/Police/not-found-img.jpg" />
                                 </div>
                             </div>
@@ -94,11 +90,11 @@
                         <div class="card-body row">
                             <h5 class="card-title col-12">Заявления от горожан</h5>
                             <div class="col-12">
-                                <ul id="declarations-list-container" class="list-group">
-                                    <li class="declarations-list-item list-group-item list-group-item-action">
+                                <ul class="declaration-container list-group">
+                                    <li class="declaration-item list-group-item list-group-item-action">
                                         <div class="row">
-                                            <p class="col m-0 declaration-user"></p>
-                                            <p class="col m-0 declaration-blamed"></p>
+                                            <p class="col m-0 dec-user"></p>
+                                            <p class="col m-0 dec-blamed"></p>
                                         </div>
                                     </li>
                                 </ul>
