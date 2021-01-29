@@ -37,6 +37,15 @@ namespace WebMaze.DbStuff.Repository
                    where (u.FirstName + u.LastName).Contains(userName) || u.Login.Contains(userName)
                    select u;
         }
-        
+
+        public IQueryable<CitizenUser> GetBlockedUsers()
+        {
+            return dbSet.Where(citizenUser => citizenUser.IsBlocked);
+        }
+
+        public IQueryable<CitizenUser> GetDeadUsers()
+        {
+            return dbSet.Where(citizenUser => citizenUser.IsDead);
+        }
     }
 }

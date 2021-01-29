@@ -150,5 +150,10 @@ namespace WebMaze.Services
             citizenUserRepository.Save(user);
             return OperationResult.Success();
         }
+
+        public virtual List<CitizenUser> GetBlockedUsers()
+        {
+            return citizenUserRepository.GetBlockedUsers().ToList();
+        }
     }
 }

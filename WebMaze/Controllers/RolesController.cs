@@ -12,7 +12,7 @@ using WebMaze.Services;
 
 namespace WebMaze.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = "Admins")]
     public class RolesController : Controller
     {
         private RoleRepository roleRepository;
