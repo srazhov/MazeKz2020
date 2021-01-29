@@ -4,7 +4,7 @@
     Layout = "_PoliceLayout";
     ViewBag.Title = $"{Model.ProfileVM.Login}";
     var status = "Полицейский";
-    var infoCard = new CardViewModel
+    var certificateCard = new CardViewModel
     {
         SubTitle = "Сертификаты",
         Title = "Управление сертификатами",
@@ -16,10 +16,10 @@
     if (!Model.HasValidCertificate)
     {
         status = "Не имеет сертификат";
-        infoCard.Title = "Получить сертификат";
-        infoCard.Description = "Внимание, у вас в данный момент нет действующего сертификата. " +
+        certificateCard.Title = "Получить сертификат";
+        certificateCard.Description = "Внимание, у вас в данный момент нет действующего сертификата. " +
             "Чтобы получить его, вам необходимо перейти в сайт Градоуправления, и подтвердить там ваш сертификат";
-        infoCard.Link = Url.Action("SignUp", "Police");
+        certificateCard.Link = Url.Action("SignUp", "Police");
     }
 }
 @section Scripts
@@ -46,47 +46,67 @@
         <div class="row">
             <div class="mb-4 col-12">
                 <div class="card">
-                    <div class="card-header">@infoCard.SubTitle</div>
+                    <div class="card-header">@certificateCard.SubTitle</div>
                     <div class="card-body">
-                        <h5 class="card-title">@infoCard.Title</h5>
-                        <p class="card-text">@infoCard.Description</p>
-                        <a class="btn btn-primary" href="@infoCard.Link">@infoCard.LinkText</a>
+                        <h5 class="card-title">@certificateCard.Title</h5>
+                        <p class="card-text">@certificateCard.Description</p>
+                        <a class="btn btn-primary" href="@certificateCard.Link">@certificateCard.LinkText</a>
                     </div>
                 </div>
             </div>
-            <div class="mb-4 col-12">
-                <div class="card">
-                    <div class="card-header">Преступления</div>
-                    <div class="card-body row">
-                        <div class="col-12">
-                            <h5 class="card-title">Последние преступления в городе</h5>
-                        </div>
-                        <div class="col-12">
-                            <ul class="list-group mb-3 violations-list-container">
-                                <li class="text-right list-group-item list-group-item-action violation-list-item">
-                                    <div class="row">
-                                        <p class="col m-0 violation-user-field"></p>
-                                        <p class="col m-0 violation-policeman-field"></p>
-                                        <p class="col m-0 violation-date-field"></p>
-                                    </div>
-                                    <a class="stretched-link violation-link"></a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-12 row justify-content-center">
+            @if (Model.HasValidCertificate)
+            {
+                <div class="mb-3 col-12">
+                    <div class="card">
+                        <div class="card-header">Преступления</div>
+                        <div class="card-body row">
                             <div class="col-12">
-                                <h5 class="text-center">Not Found</h5>
+                                <h5 class="card-title">Последние преступления в городе</h5>
                             </div>
-                            <div class="violation-not-found mb-3 col-6">
-                                <img class="img-fluid" src="~/image/Police/not-found-img.jpg" />
+                            <div class="col-12">
+                                <ul class="list-group mb-3 violations-list-container">
+                                    <li class="text-right list-group-item list-group-item-action violation-list-item">
+                                        <div class="row">
+                                            <p class="col m-0 violation-user-field"></p>
+                                            <p class="col m-0 violation-policeman-field"></p>
+                                            <p class="col m-0 violation-date-field"></p>
+                                        </div>
+                                        <a class="stretched-link violation-link"></a>
+                                    </li>
+                                </ul>
                             </div>
-                        </div>
-                        <div class="col-12">
-                            <a class="btn btn-outline-primary stretched-link" asp-controller="Police" asp-action="Criminal">Ещё</a>
+                            <div class="col-12 row justify-content-center">
+                                <div class="col-12">
+                                    <h5 class="text-center">Not Found</h5>
+                                </div>
+                                <div class="violation-not-found mb-3 col-6">
+                                    <img class="img-fluid" src="~/image/Police/not-found-img.jpg" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <a class="btn btn-outline-primary stretched-link" asp-controller="Police" asp-action="Criminal">Ещё</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                <div class="mb-4 col-6">
+                    <div class="card">
+                        <div class="card-body row">
+                            <h5 class="card-title col-12">Заявления от горожан</h5>
+                            <div class="col-12">
+                                <ul id="declarations-list-container" class="list-group">
+                                    <li class="declarations-list-item list-group-item list-group-item-action">
+                                        <div class="row">
+                                            <p class="col m-0 declaration-user"></p>
+                                            <p class="col m-0 declaration-blamed"></p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>

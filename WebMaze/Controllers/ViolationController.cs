@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
 using WebMaze.DbStuff.Model.Police;
 using WebMaze.DbStuff.Repository;
 using WebMaze.Models.Police.Violation;
 
 namespace WebMaze.Controllers
 {
+    [Authorize(AuthenticationSchemes = Startup.PoliceAuthMethod)]
     [Route("api/[controller]")]
     [ApiController]
     public class ViolationController : ControllerBase
@@ -56,6 +57,12 @@ namespace WebMaze.Controllers
             }
 
             return mapper.Map<IEnumerable<FoundUsersViewModel>>(userRepo.GetFamiliarUserNames(word));
+        }
+
+        [HttpGet("Declarations/{max}")]
+        public IEnumerable<ViolationDeclarationViewModel> GetViolationDeclarations(int max = 10)
+        {
+            return mapper.Map<IEnumerable<ViolationDeclarationViewModel>>(declaredViolationRepo.GetAll(max));
         }
 
         [HttpPost("Search")]

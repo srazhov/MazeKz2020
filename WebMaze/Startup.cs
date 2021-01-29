@@ -55,7 +55,7 @@ namespace WebMaze
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=WebMazeKz;Trusted_Connection=True;";
+            var connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=WebMazeKz;Trusted_Connection=True;MultipleActiveResultSets=true;";
             services.AddDbContext<WebMazeContext>(option => option.UseSqlServer(connectionString));
 
             services.AddAuthentication(AuthMethod)
@@ -159,7 +159,8 @@ namespace WebMaze
                 .ForMember(dest => dest.PolicemanName, opt => opt.MapFrom(v => v.BlamingPoliceman.User.FirstName + " " + v.BlamingPoliceman.User.LastName));
 
             configurationExpression.CreateMap<ViolationDeclarationViewModel, ViolationDeclaration>()
-                .ForMember(dest => dest.OffenseType, opt => opt.MapFrom(v => v.OffenseType.ToString()));
+                .ForMember(dest => dest.OffenseType, opt => opt.MapFrom(v => v.OffenseType.ToString()))
+                .ReverseMap();
 
             configurationExpression.CreateMap<PoliceCertificate, PoliceCertificateItemViewModel>();
 

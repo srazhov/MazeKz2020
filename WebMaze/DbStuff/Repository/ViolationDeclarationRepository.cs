@@ -27,5 +27,10 @@ namespace WebMaze.DbStuff.Repository
             Save(item);
             return true;
         }
+
+        public IEnumerable<ViolationDeclaration> GetAll(int max = 10)
+        {
+            return dbSet.Take(max);
+        }
     }
 }

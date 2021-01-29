@@ -146,6 +146,20 @@ $(document).ready(function () {
             }
         });
     });
+
+    if ($('#declarations-list-container').length != 0) {
+        const parent = $('#declarations-list-container');
+        const clone = parent.find('.declarations-list-item').hide();
+
+        $.get('/api/violation/Declarations/10', function (data) {
+            for (const i in data) {
+                const listItem = clone.clone().appendTo(parent).toggleClass('declarations-list-item').show();
+
+                listItem.find('.declaration-user').text(data[i].userLogin);
+                listItem.find('.declaration-blamed').text(data[i].blamedUserLogin);
+            }
+        });
+    }
 });
 
 // Заполнение данных Violations к нужным местам
