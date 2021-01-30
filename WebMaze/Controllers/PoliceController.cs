@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using WebMaze.DbStuff.Model.Police;
 using WebMaze.DbStuff.Repository;
 using WebMaze.Models.Account;
-using WebMaze.Models.PoliceCertificate;
 using WebMaze.Models.Police;
 using WebMaze.Models.Police.Violation;
 
@@ -23,29 +22,14 @@ namespace WebMaze.Controllers
         private readonly IMapper mapper;
         private readonly PolicemanRepository pmRepo;
         private readonly CitizenUserRepository cuRepo;
-        private readonly PoliceCertificateRepository certRepo;
 
         public PoliceController(IMapper mapper,
             PolicemanRepository pmRepo,
-            CitizenUserRepository cuRepo, PoliceCertificateRepository certRepo)
+            CitizenUserRepository cuRepo)
         {
             this.mapper = mapper;
             this.pmRepo = pmRepo;
             this.cuRepo = cuRepo;
-            this.certRepo = certRepo;
-        }
-
-        [HttpPost]
-        public IActionResult RegisterPoliceman()
-        {
-            var userItem = cuRepo.GetUserByLogin(User.Identity.Name);
-            if (userItem == null || pmRepo.IsUserPoliceman(userItem, out _))
-            {
-                throw new NotImplementedException();
-            }
-
-            pmRepo.MakePolicemanFromUser(userItem);
-            return RedirectToAction("Account");
         }
 
         [HttpPost]
@@ -53,6 +37,11 @@ namespace WebMaze.Controllers
         {
             await HttpContext.SignOutAsync(Startup.PoliceAuthMethod);
             return RedirectToAction("Index");
+        }
+
+        public IActionResult SignUp()
+        {
+            return View();
         }
 
         public IActionResult Account()
@@ -72,58 +61,17 @@ namespace WebMaze.Controllers
             var result = mapper.Map<PolicemanViewModel>(policeItem);
             result.ProfileVM.AvatarUrl = ChangeNullPhotoToDefault(result.ProfileVM.AvatarUrl);
 
-            if (certRepo.HasValidCertificate(User.Identity.Name, "Police", out var certificate))
-            {
-                result.Validity = certificate.Validity;
-                result.DateOfIssue = certificate.DateOfIssue;
-            }
-
             return View(result);
-        }
-
-        public IActionResult SignUp()
-        {
-            return View();
-        }
-
-        public IActionResult Certificate()
-        {
-            var user = cuRepo.GetUserByLogin(User.Identity.Name);
-            if (!pmRepo.IsUserPoliceman(user, out _))
-            {
-                pmRepo.MakePolicemanFromUser(user);
-            }
-
-            var addmonths = 1;
-            var item = new PoliceCertificateViewModel()
-            {
-                Speciality = "Police",
-                Expires = DateTime.Today.AddMonths(addmonths),
-                RedirectToController = "Police",
-                RedirectToAction = "Account",
-                Price = 10
-            };
-
-            if (certRepo.HasValidCertificate(User.Identity.Name, "Police", out var certificate))
-            {
-                if (certificate.Validity == null)
-                {
-                    return RedirectToAction("Account");
-                }
-
-                item.Starts = certificate.Validity.GetValueOrDefault();
-                if (item.Expires != null)
-                {
-                    item.Expires = item.Starts.AddMonths(addmonths);
-                }
-            }
-
-            return RedirectToAction("Index", "PoliceCertificate", item);
         }
 
         [Route("[controller]/[action]/{id?}")]
         public IActionResult Criminal(int? id)
         {
+            if(!pmRepo.IsUserPoliceman(cuRepo.GetUserByLogin(User.Identity.Name), out _))
+            {
+                return RedirectToAction("Account");
+            }
+
             if (id == null)
             {
                 return View();

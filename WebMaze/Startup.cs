@@ -29,7 +29,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using WebMaze.Models.Police;
 using WebMaze.DbStuff.Model.Police;
-using WebMaze.Models.PoliceCertificate;
 using WebMaze.DbStuff.Repository.MedicineRepo;
 using WebMaze.Models.Roles;
 using WebMaze.Models.Police.Violation;
@@ -152,15 +151,11 @@ namespace WebMaze
             configurationExpression.CreateMap<Policeman, PolicemanViewModel>()
                 .ForMember(dest => dest.ProfileVM, opt => opt.MapFrom(p => p.User));
 
-            configurationExpression.CreateMap<PoliceCertificate, PoliceCertificateItemViewModel>();
-
             configurationExpression.CreateMap<Violation, ViolationItemViewModel>()
                 .ForMember(dest => dest.BlamedUserName, opt => opt.MapFrom(v => v.BlamedUser.FirstName + " " + v.BlamedUser.LastName))
                 .ForMember(dest => dest.PolicemanName, opt => opt.MapFrom(v => v.ViewingPoliceman.User.FirstName + " " + v.BlamedUser.LastName));
 
             configurationExpression.CreateMap<ViolationDeclarationViewModel, Violation>().ReverseMap();
-
-            configurationExpression.CreateMap<PoliceCertificate, PoliceCertificateItemViewModel>();
 
             configurationExpression.CreateMap<CitizenUser, FoundUsersViewModel>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(u => u.FirstName + " " + u.LastName));
@@ -204,7 +199,6 @@ namespace WebMaze
             services.AddScoped(s => new AdressRepository(s.GetService<WebMazeContext>()));
 
             services.AddScoped(s => new PolicemanRepository(s.GetService<WebMazeContext>()));
-            services.AddScoped(s => new PoliceCertificateRepository(s.GetService<WebMazeContext>()));
             services.AddScoped(s => new ViolationRepository(s.GetService<WebMazeContext>()));
 
             services.AddScoped(s => new HealthDepartmentRepository(s.GetService<WebMazeContext>()));

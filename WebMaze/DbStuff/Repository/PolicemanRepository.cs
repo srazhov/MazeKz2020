@@ -4,20 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebMaze.DbStuff.Model;
 using WebMaze.DbStuff.Model.Police;
+using WebMaze.DbStuff.Model.Police.Enums;
 
 namespace WebMaze.DbStuff.Repository
 {
     public class PolicemanRepository : BaseRepository<Policeman>
     {
         public PolicemanRepository(WebMazeContext context) : base(context) { }
-
-        public IEnumerable<CitizenUser> GetPolicemanUsers()
-        {
-            var items = from u in dbSet
-                        select u.User;
-
-            return items;
-        }
 
         public bool IsUserPoliceman(CitizenUser user, out Policeman output)
         {
@@ -27,7 +20,7 @@ namespace WebMaze.DbStuff.Repository
 
         public void MakePolicemanFromUser(CitizenUser user)
         {
-            var policeman = new Policeman() { User = user, Rank = "Не имеет сертификат" };
+            var policeman = new Policeman() { User = user, Rank = PolicemanRank.NotVerified };
             Save(policeman);
         }
     }
