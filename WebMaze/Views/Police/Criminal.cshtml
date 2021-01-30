@@ -11,15 +11,29 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="form-group row mb-md-0">
-                <label class="col-auto">Сортировка: </label>
+                <label class="col-4">Сортировка: </label>
                 <div class="col-8">
                     <select name="order" class="form-control">
                         <option value="Latest" selected>Сначала последние</option>
                         <option value="Earliest">Сначала ранние</option>
                         <option value="ABCUser">По алфавитному порядку Гр.</option>
                         <option value="ABCPolice">По алфавитному порядку Пол.</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group row">
+                <label class="col-4">Показать:</label>
+                <div class="col-8">
+                    <select name="showStatus" class="form-control">
+                        <option value="All" selected>Показать все</option>
+                        <option value="NotStarted" selected>Не просмотренные</option>
+                        <option value="Started" selected>Рассматривающиеся</option>
+                        <option value="Denied" selected>Отказанные</option>
+                        <option value="Accepted" selected>Принятые</option>
                     </select>
                 </div>
             </div>
@@ -46,18 +60,20 @@
 <table class="table table-striped table-hover">
     <thead>
         <tr class="d-flex">
-            <th class="col-md-4">Гражданин</th>
-            <th class="col-md-4">Полицейский</th>
-            <th class="col-md-2 col-4">Дата</th>
+            <th class="col-md-3">Гражданин</th>
+            <th class="col-md-3">Полицейский</th>
+            <th class="col-md-2 col-3">Дата</th>
+            <th class="col-md-2 col-3">Статус</th>
             <th class="col-md-2 d-none d-md-block"></th>
         </tr>
     </thead>
     <tbody class="violation-container">
         <tr class="d-flex violation-item clickable">
-            <td class="col-md-4 v-user"></td>
-            <td class="col-md-4 v-policeman"></td>
-            <td class="col-md-2 col-4 v-date"></td>
-            <td class="col-md-2 d-none d-md-block">
+            <td class="col-md-3 v-user"></td>
+            <td class="col-md-3 v-policeman"></td>
+            <td class="col-md-2 col-3 v-date"></td>
+            <td class="col-md-2 col-3 v-status"></td>
+            <td class="col-md-2 d-none d-md-block text-right">
                 <a class="v-link">Перейти</a>
             </td>
         </tr>

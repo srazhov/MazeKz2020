@@ -14,6 +14,7 @@ namespace WebMaze.Models.Police.Violation
         public int FoundOnThisPage { get; set; }
         public int CurrentPage { get; set; }
         public WayOfOrder Order { get; set; } = WayOfOrder.Latest;
+        public string ShowStatus { get; set; } = "All";
 
         public ViolationItemViewModel[] Violations { get; set; }
     }

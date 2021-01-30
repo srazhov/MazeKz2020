@@ -131,14 +131,14 @@ $(document).ready(function () {
     });
 
     if ($('.violation-container .violation-item').length != 0) {
-        $.get('/api/violation/', function (data) {
-            AddDataItem(data, 'violation', ViolationInstructionsToExtractData);
-        });
-    }
+        const maxAttr = $('.violation-container').attr('data-max');
+        let maxItems = '';
+        if (typeof maxAttr !== typeof undefined && maxAttr !== false) {
+            maxItems = maxAttr;
+        }
 
-    if ($('.declaration-container .declaration-item').length != 0) {
-        $.get('/api/violation/Declarations/10', function (data) {
-            AddDataItem(data, 'declaration', DeclarationInstruction);
+        $.get('/api/violation/' + maxItems, function (data) {
+            AddDataItem(data, 'violation', ViolationInstructionsToExtractData);
         });
     }
 });
@@ -180,16 +180,26 @@ function AddDataItem(data, dataName, instruction) {
 }
 
 function ViolationInstructionsToExtractData(clone, data) {
-    clone.find('.v-user').text(data.userName);
+    clone.find('.v-user').text(data.blamedUserName);
     clone.find('.v-policeman').text(data.policemanName);
     clone.find('.v-date').text(new Date(data.date).toLocaleDateString());
     clone.find('.v-link').attr('href', '/Police/Criminal/' + data.id);
     $('.temp-clickable').toggleClass('temp-clickable').click(function () {
         window.location = '/Police/Criminal/' + data.id;
     });
-}
 
-function DeclarationInstruction(clone, data) {
-    clone.find('.dec-user').text(data.userLogin);
-    clone.find('.dec-blamed').text(data.blamedUserLogin);
+    switch (data.status) {
+        case 'NotStarted':
+            clone.find('.v-status').text('Не просмотрено').addClass('text-info');
+            break;
+        case 'Started':
+            clone.find('.v-status').text('Рассматривается').addClass('text-primary');
+            break;
+        case 'Denied':
+            clone.find('.v-status').text('Отказано').addClass('text-danger');
+            break;
+        case 'Accepted':
+            clone.find('.v-status').text('Принято').addClass('text-success');
+            break;
+    }
 }

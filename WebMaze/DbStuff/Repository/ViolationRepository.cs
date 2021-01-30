@@ -12,9 +12,9 @@ namespace WebMaze.DbStuff.Repository
     {
         public ViolationRepository(WebMazeContext context) : base(context) { }
 
-        public Violation[] GetDeclarations(int max)
+        public Violation[] GetAll(int max)
         {
-            return dbSet.Where(v => v.Status == CurrentStatus.NotStarted).Take(max).ToArray();
+            return dbSet.Take(max).ToArray();
         }
 
         public bool AddViolation(Violation item, string blamingUserLogin, string blamedUserLogin)
@@ -32,13 +32,18 @@ namespace WebMaze.DbStuff.Repository
         }
 
         public Violation[] GetByGivenSettings(string searchword, DateTime? dateFrom, DateTime? dateTo,
-            WayOfOrder orderWay, out int foundTotal, int currentPage = 0, int pageMax = 50)
+            WayOfOrder orderWay, string neededStatus, out int foundTotal, int currentPage = 0, int pageMax = 50)
         {
             var result = from v in dbSet
                          where (string.IsNullOrEmpty(searchword) || (v.BlamedUser.FirstName + " " + v.BlamedUser.LastName).Contains(searchword)
                          || (v.ViewingPoliceman.User.FirstName + " " + v.ViewingPoliceman.User.LastName).Contains(searchword))
                          where (dateFrom == null || v.Date >= dateFrom) && (dateTo == null || v.Date <= dateTo)
                          select v;
+
+            if(Enum.TryParse(neededStatus, out CurrentStatus curStatus))
+            {
+                result = result.Where(v => v.Status == curStatus);
+            }
 
             result = orderWay switch
             {

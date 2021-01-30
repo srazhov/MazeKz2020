@@ -27,22 +27,10 @@ namespace WebMaze.Controllers
             this.userRepo = userRepo;
         }
 
-        [HttpGet]
-        public IEnumerable<ViolationItemViewModel> Get()
+        [HttpGet("{max?}")]
+        public IEnumerable<ViolationItemViewModel> Get(int max = 10)
         {
-            return mapper.Map<ViolationItemViewModel[]>(violationRepo.GetAll());
-        }
-
-        [HttpGet("{id}")]
-        public ActionResult<ViolationItemViewModel> Get(long id)
-        {
-            var item = violationRepo.Get(id);
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            return mapper.Map<ViolationItemViewModel>(item);
+            return mapper.Map<ViolationItemViewModel[]>(violationRepo.GetAll(max));
         }
 
         [HttpGet("SearchUsers/{word}")]
@@ -56,17 +44,11 @@ namespace WebMaze.Controllers
             return mapper.Map<IEnumerable<FoundUsersViewModel>>(userRepo.GetFamiliarUserNames(word));
         }
 
-        [HttpGet("Declarations/{max?}")]
-        public IEnumerable<ViolationDeclarationViewModel> GetViolationDeclarations(int max = 10)
-        {
-            return mapper.Map<IEnumerable<ViolationDeclarationViewModel>>(violationRepo.GetDeclarations(max));
-        }
-
         [HttpPost("Search")]
         public ActionResult<ViolationSearchItems> GetSearchItems(ViolationSearchItems searchItem)
         {
             var item = violationRepo.GetByGivenSettings(searchItem.SearchWord, searchItem.DateFrom,
-                searchItem.DateTo, searchItem.Order, out int foundCount, searchItem.CurrentPage);
+                searchItem.DateTo, searchItem.Order, searchItem.ShowStatus, out int foundCount, searchItem.CurrentPage);
 
             searchItem.Violations = mapper.Map<ViolationItemViewModel[]>(item);
             searchItem.FoundCount = foundCount;
