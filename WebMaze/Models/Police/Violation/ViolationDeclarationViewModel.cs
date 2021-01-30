@@ -1,4 +1,5 @@
 ﻿using System;
+using WebMaze.DbStuff.Model.Police.Enums;
 
 namespace WebMaze.Models.Police.Violation
 {
@@ -9,11 +10,7 @@ namespace WebMaze.Models.Police.Violation
         public DateTime Date { get; set; }
         public string Explanation { get; set; }
         public TypeOfOffense OffenseType { get; set; }
-    }
 
-    public enum TypeOfOffense
-    {
-        Administrative,
-        Criminal
+        public string RedirectLink { get; set; }
     }
 }

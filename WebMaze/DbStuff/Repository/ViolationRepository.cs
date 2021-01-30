@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebMaze.DbStuff.Model.Police;
+using WebMaze.DbStuff.Model.Police.Enums;
 using WebMaze.Models.Police.Violation;
 
 namespace WebMaze.DbStuff.Repository
@@ -11,16 +12,21 @@ namespace WebMaze.DbStuff.Repository
     {
         public ViolationRepository(WebMazeContext context) : base(context) { }
 
-        public bool AddViolation(Violation item, string userLogin, string policemanLogin)
+        public Violation[] GetDeclarations(int max)
         {
-            item.User = context.CitizenUser.SingleOrDefault(u => u.Login == userLogin);
-            item.BlamingPoliceman = context.Policemen.SingleOrDefault(u => u.User.Login == policemanLogin);
+            return dbSet.Where(v => v.Status == CurrentStatus.NotStarted).Take(max).ToArray();
+        }
 
-            if (item.User == null || item.BlamingPoliceman == null)
+        public bool AddViolation(Violation item, string blamingUserLogin, string blamedUserLogin)
+        {
+            item.BlamingUser = context.CitizenUser.SingleOrDefault(u => u.Login == blamingUserLogin);
+            item.BlamedUser = context.CitizenUser.SingleOrDefault(u => u.Login == blamedUserLogin);
+            if (item.BlamingUser == null || item.BlamedUser == null)
             {
                 return false;
             }
 
+            item.Status = CurrentStatus.NotStarted;
             Save(item);
             return true;
         }
@@ -29,8 +35,8 @@ namespace WebMaze.DbStuff.Repository
             WayOfOrder orderWay, out int foundTotal, int currentPage = 0, int pageMax = 50)
         {
             var result = from v in dbSet
-                         where (string.IsNullOrEmpty(searchword) || (v.User.FirstName + " " + v.User.LastName).Contains(searchword)
-                         || (v.BlamingPoliceman.User.FirstName + " " + v.BlamingPoliceman.User.LastName).Contains(searchword))
+                         where (string.IsNullOrEmpty(searchword) || (v.BlamedUser.FirstName + " " + v.BlamedUser.LastName).Contains(searchword)
+                         || (v.ViewingPoliceman.User.FirstName + " " + v.ViewingPoliceman.User.LastName).Contains(searchword))
                          where (dateFrom == null || v.Date >= dateFrom) && (dateTo == null || v.Date <= dateTo)
                          select v;
 
@@ -38,8 +44,8 @@ namespace WebMaze.DbStuff.Repository
             {
                 WayOfOrder.Latest => result.OrderByDescending(v => v.Date),
                 WayOfOrder.Earliest => result.OrderBy(v => v.Date),
-                WayOfOrder.ABCUser => result.OrderBy(v => v.User.FirstName + " " + v.User.LastName),
-                WayOfOrder.ABCPolice => result.OrderBy(v => v.BlamingPoliceman.User.FirstName + " " + v.BlamingPoliceman.User.LastName),
+                WayOfOrder.ABCUser => result.OrderBy(v => v.BlamedUser.FirstName + " " + v.BlamedUser.LastName),
+                WayOfOrder.ABCPolice => result.OrderBy(v => v.ViewingPoliceman.User.FirstName + " " + v.ViewingPoliceman.User.LastName),
                 _ => throw new NotImplementedException(),
             };
 

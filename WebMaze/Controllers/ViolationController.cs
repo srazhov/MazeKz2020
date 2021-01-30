@@ -15,19 +15,16 @@ namespace WebMaze.Controllers
     {
         private readonly IMapper mapper;
         private readonly ViolationRepository violationRepo;
-        private readonly ViolationDeclarationRepository declaredViolationRepo;
         private readonly CitizenUserRepository userRepo;
 
         public ViolationController(
             IMapper mapper,
             ViolationRepository violationRepo,
-            CitizenUserRepository userRepo,
-            ViolationDeclarationRepository declaredViolationRepo)
+            CitizenUserRepository userRepo)
         {
             this.mapper = mapper;
             this.violationRepo = violationRepo;
             this.userRepo = userRepo;
-            this.declaredViolationRepo = declaredViolationRepo;
         }
 
         [HttpGet]
@@ -59,10 +56,10 @@ namespace WebMaze.Controllers
             return mapper.Map<IEnumerable<FoundUsersViewModel>>(userRepo.GetFamiliarUserNames(word));
         }
 
-        [HttpGet("Declarations/{max}")]
+        [HttpGet("Declarations/{max?}")]
         public IEnumerable<ViolationDeclarationViewModel> GetViolationDeclarations(int max = 10)
         {
-            return mapper.Map<IEnumerable<ViolationDeclarationViewModel>>(declaredViolationRepo.GetAll(max));
+            return mapper.Map<IEnumerable<ViolationDeclarationViewModel>>(violationRepo.GetDeclarations(max));
         }
 
         [HttpPost("Search")]
@@ -78,20 +75,21 @@ namespace WebMaze.Controllers
             return searchItem;
         }
 
-        [HttpPost]
-        public ActionResult<ViolationDeclarationViewModel> Post(ViolationDeclarationViewModel item)
+        [HttpPost("Declaration")]
+        public ActionResult<ViolationDeclarationViewModel> AddViolationDeclaration(ViolationDeclarationViewModel item)
         {
             if (item == null)
             {
                 return BadRequest();
             }
 
-            var violationDecl = mapper.Map<ViolationDeclaration>(item);
-            if (!declaredViolationRepo.AddViolationDeclaration(item.UserLogin, item.BlamedUserLogin, violationDecl))
+            var violationDecl = mapper.Map<Violation>(item);
+            if (!violationRepo.AddViolation(violationDecl, item.UserLogin, item.BlamedUserLogin))
             {
                 return BadRequest(item);
             }
 
+            item.RedirectLink = Url.Action("Account", "Police");
             return Ok(item);
         }
     }

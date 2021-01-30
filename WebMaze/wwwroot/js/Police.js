@@ -85,7 +85,6 @@ $(document).ready(function () {
     // Кнопка отправки формы AddViolation
     $('#confirm-add-violation').click(function () {
         const form = $('#add-violation');
-        const jData = SerializeForm(form);
 
         $.ajax({
             type: 'POST',
@@ -94,10 +93,9 @@ $(document).ready(function () {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            data: jData,
+            data: SerializeForm(form),
             success: function (data) {
-                // TO DO: 
-                // Перенаправление на другой View
+                window.location = data.redirectLink;
             },
             error: function () {
                 alert('Произошла ошибка');
@@ -110,8 +108,6 @@ $(document).ready(function () {
         const form = $(this).closest('form');
         e.preventDefault();
 
-        const jData = SerializeForm(form);
-
         $.ajax({
             type: 'POST',
             url: form.attr('action'),
@@ -119,7 +115,7 @@ $(document).ready(function () {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            data: jData,
+            data: SerializeForm(form),
             success: function (data) {
                 AddDataItem(data.violations, 'violation', ViolationInstructionsToExtractData);
                 $('violation-counter').text('Найдено результатов: ' + data.foundCount + ' (' + data.foundOnThisPage + ' на этой странице)');
