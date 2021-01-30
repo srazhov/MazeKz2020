@@ -6,21 +6,22 @@ using Microsoft.Extensions.DependencyInjection;
 using WebMaze.DbStuff.Model;
 using WebMaze.DbStuff.Model.UserAccount;
 using WebMaze.DbStuff.Repository;
-using WebMaze.Services;
 
 namespace WebMaze.DbStuff
 {
     public class TestDataSeeder
     {
-        private UserService userService;
+        private CitizenUserRepository citizenUserRepository;
+        private RoleRepository roleRepository;
 
         public TestDataSeeder(IServiceScope scope)
         {
-            userService = scope.ServiceProvider.GetService<UserService>();
+            citizenUserRepository = scope.ServiceProvider.GetService<CitizenUserRepository>();
+            roleRepository = scope.ServiceProvider.GetService<RoleRepository>();
 
-            if (userService == null)
+            if (citizenUserRepository == null || roleRepository == null)
             {
-                throw new Exception("Cannot get UserService from ServiceProvider.");
+                throw new Exception("Cannot get services from ServiceProvider.");
             }
         }
 
@@ -158,54 +159,48 @@ namespace WebMaze.DbStuff
 
         private void AddIfNotExistUsersWithRole(List<CitizenUser> users, string roleName = null)
         {
-            foreach (var user in users)
+            foreach (var user in users.Where(u => !citizenUserRepository.UserExists(u.Login)))
             {
-                var userFromDb = userService.FindByLogin(user.Login);
-
-                if (userFromDb == null)
+                if (roleName != null)
                 {
-                    userService.Save(user);
-                    if (roleName != null)
-                    {
-                        userService.AddToRole(user, roleName);
-                    }
+                    var role = roleRepository.GetRoleByName(roleName);
+                    user.Roles.Add(role);
                 }
+
+                citizenUserRepository.Save(user);
             }
         }
 
         private void AddCertificates()
         {
-            var allCitizens = userService.GetUsers();
+            var allCitizens = citizenUserRepository.GetUsersAsQueryable();
 
             // Ensure that all citizens have a birth certificate.
             AddIfNotExistCertificateToCitizens(allCitizens, "Birth Certificate");
 
             // Ensure that 5 citizens have a diploma.
             var citizenLoginsWithDiploma = new List<string> { "Bill", "Musk", "Stroustrup", "Tsoi", "Chuck" };
-            var citizenWithDiploma = allCitizens.Where(c => citizenLoginsWithDiploma.Contains(c.Login)).ToList();
+            var citizenWithDiploma = citizenUserRepository.GetUsersByLogins(citizenLoginsWithDiploma);
             AddIfNotExistCertificateToCitizens(citizenWithDiploma, "Diploma of Higher Education");
 
             // Ensure that citizens have a policeman certificate.
             var citizenLoginsWithPoliceCertificate = new List<string> { "Chuck" };
-            var policemen = allCitizens.Where(c => citizenLoginsWithPoliceCertificate.Contains(c.Login)).ToList();
+            var policemen = citizenUserRepository.GetUsersByLogins(citizenLoginsWithPoliceCertificate);
             AddIfNotExistCertificateToCitizens(policemen, "Policeman Certificate");
 
             // Ensure that citizens have a doctor certificate.
             var citizenLoginsWithDoctorCertificate = new List<string> { "Tsoi" };
-            var doctors = allCitizens.Where(c => citizenLoginsWithDoctorCertificate.Contains(c.Login)).ToList();
+            var doctors = citizenUserRepository.GetUsersByLogins(citizenLoginsWithDoctorCertificate);
             AddIfNotExistCertificateToCitizens(doctors, "Doctor Certificate");
         }
 
-        private void AddIfNotExistCertificateToCitizens(List<CitizenUser> citizens, string certificateName)
+        private void AddIfNotExistCertificateToCitizens(IQueryable<CitizenUser> citizens, string certificateName)
         {
-            foreach (var citizen in citizens)
+            foreach (var citizen in citizens.Where(user => user.Certificates.All(certificate => certificate.Name != certificateName)).ToList())
             {
-                if (citizen.Certificates.All(c => c.Name != certificateName))
-                {
-                    var certificate = GenerateCertificate(certificateName, citizen);
-                    citizen.Certificates.Add(certificate);
-                    userService.Save(citizen);
-                }
+                var certificate = GenerateCertificate(certificateName, citizen);
+                citizen.Certificates.Add(certificate);
+                citizenUserRepository.Save(citizen);
             }
         }
 

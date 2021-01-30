@@ -56,6 +56,11 @@ namespace WebMaze.Services
             return citizenUserRepository.GetUserByLogin(login);
         }
 
+        public bool UserExists(string login)
+        {
+            return citizenUserRepository.UserExists(login);
+        }
+
         public virtual void Save(CitizenUser user)
         {
             citizenUserRepository.Save(user);
