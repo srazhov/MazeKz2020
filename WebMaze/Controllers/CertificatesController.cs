@@ -80,8 +80,8 @@ namespace WebMaze.Controllers
         [ExportModelStateErrorsToTempData]
         public async Task<IActionResult> Issue(string userLogin)
         {
-            var operationResult = await certificateService.IssueCertificate("Birth certificate", userLogin,
-                "Government", "Birth certificate", TimeSpan.FromDays(3650));
+            var operationResult = await certificateService.IssueCertificate("Birth Certificate", userLogin,
+                "Government", "The certificate documents the birth of the person", TimeSpan.FromDays(3650));
             
             if (!operationResult.Succeeded)
             {
@@ -91,7 +91,32 @@ namespace WebMaze.Controllers
                 }
             }
 
-            return RedirectToAction(nameof(Index));
+            var urlReferrer = Request.Headers["Referer"].ToString();
+
+            return Redirect(urlReferrer);
+
+            /* Second approach, a lot of code duplicates:
+
+            var uri = new Uri(urlReferrer);
+            var queryDictionary = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+            
+            var certificates = new List<CertificateViewModel>();
+
+            if (!queryDictionary.Any())
+            {
+                certificates = await certificateService.GetCertificatesAsync();
+            }
+            else if(!string.IsNullOrWhiteSpace(queryDictionary["certificateName"]))
+            {
+                certificates = await certificateService.GetCertificatesByName(queryDictionary["certificateName"]);
+            }
+            else if (!string.IsNullOrWhiteSpace(queryDictionary["userLogin"]))
+            {
+                certificates = await certificateService.GetUserCertificates(queryDictionary["userLogin"]);
+            }
+
+            return View(nameof(Index), certificates);
+            */
         }
 
         [HttpPost]
@@ -108,7 +133,9 @@ namespace WebMaze.Controllers
                 }
             }
 
-            return RedirectToAction(nameof(Index));
+            var urlReferrer = Request.Headers["Referer"].ToString();
+
+            return Redirect(urlReferrer);
         }
 
         public async Task<IActionResult> Update(long id)
@@ -151,7 +178,9 @@ namespace WebMaze.Controllers
                 }
             }
 
-            return RedirectToAction("Index");
+            var urlReferrer = Request.Headers["Referer"].ToString();
+
+            return Redirect(urlReferrer);
         }
     }
 }

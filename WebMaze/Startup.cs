@@ -102,10 +102,6 @@ namespace WebMaze
 
             RegistrationRepository(services);
 
-            services.AddScoped(s => new UserValidator(
-                s.GetService<CitizenUserRepository>(), 
-                requiredPasswordLength:3));
-
             services.AddScoped(s => new UserService(s.GetService<CitizenUserRepository>(),
                 s.GetService<RoleRepository>(),
                 s.GetService<IHttpContextAccessor>()));
@@ -114,6 +110,7 @@ namespace WebMaze
 
             services.AddControllersWithViews().AddJsonOptions(opt =>
             {
+                opt.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                 opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
