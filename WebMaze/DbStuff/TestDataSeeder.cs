@@ -47,7 +47,7 @@ namespace WebMaze.DbStuff
                     LastLoginDate = new DateTime(2020, 10, 28),
                     FirstName = "Alexey",
                     LastName = "Tsoi",
-                    Gender = "Male",
+                    Gender = Gender.Male,
                     Email = "AlexeyTsoi@example.com",
                     PhoneNumber = "3333333333",
                     BirthDate = new DateTime(1977, 4, 2)
@@ -69,7 +69,7 @@ namespace WebMaze.DbStuff
                     LastLoginDate = new DateTime(2020, 12, 30),
                     FirstName = "Chuck",
                     LastName = "Norris",
-                    Gender = "Male",
+                    Gender = Gender.Male,
                     Email = "ChuckNorris@example.com",
                     PhoneNumber = "4444444444",
                     BirthDate = new DateTime(1940, 3, 10)
@@ -91,7 +91,7 @@ namespace WebMaze.DbStuff
                     LastLoginDate = new DateTime(2021, 1, 12),
                     FirstName = "Ivan",
                     LastName = "Sokolov",
-                    Gender = "Male",
+                    Gender = Gender.Male,
                     Email = "IvanSokolov@example.com",
                     PhoneNumber = "5555555555",
                     BirthDate = new DateTime(1980, 5, 17)
@@ -105,7 +105,7 @@ namespace WebMaze.DbStuff
                     LastLoginDate = new DateTime(2021, 1, 15),
                     FirstName = "Anastasia",
                     LastName = "Kuznecova",
-                    Gender = "Female",
+                    Gender = Gender.Female,
                     Email = "AnastasiaKuznecova@example.com",
                     PhoneNumber = "66666666",
                     BirthDate = new DateTime(1990, 11, 22)
@@ -119,7 +119,7 @@ namespace WebMaze.DbStuff
                     LastLoginDate = new DateTime(2021, 1, 16),
                     FirstName = "Arnold",
                     LastName = "Goldenberg",
-                    Gender = "Male",
+                    Gender = Gender.Male,
                     Email = "ArnoldGoldenberg@example.com",
                     PhoneNumber = "77777777",
                     BirthDate = new DateTime(1977, 5, 10)
@@ -133,7 +133,7 @@ namespace WebMaze.DbStuff
                     LastLoginDate = new DateTime(2021, 1, 17),
                     FirstName = "Aigerim",
                     LastName = "Alieva",
-                    Gender = "Female",
+                    Gender = Gender.Female,
                     Email = "AigerimAlieva@example.com",
                     PhoneNumber = "8888888888",
                     BirthDate = new DateTime(1983, 8, 3)
@@ -147,7 +147,7 @@ namespace WebMaze.DbStuff
                     LastLoginDate = new DateTime(2021, 1, 19),
                     FirstName = "Dias",
                     LastName = "Karimov",
-                    Gender = "Male",
+                    Gender = Gender.Male,
                     Email = "DiasKarimov@example.com",
                     PhoneNumber = "9999999999",
                     BirthDate = new DateTime(2005, 10, 5)

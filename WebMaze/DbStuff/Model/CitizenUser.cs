@@ -17,12 +17,14 @@ namespace WebMaze.DbStuff.Model
         [Required]
         public virtual string Login { get; set; }
 
+        [Required]
         public virtual string Password { get; set; }
 
         public virtual string AvatarUrl { get; set; }
 
         public virtual bool IsBlocked { get; set; }
 
+        [Column(TypeName = "money")]
         public virtual decimal Balance { get; set; }
 
         public virtual DateTime RegistrationDate { get; set; }
@@ -33,19 +35,19 @@ namespace WebMaze.DbStuff.Model
 
         public virtual string LastName { get; set; }
 
-        public virtual string Gender { get; set; }
-
         public virtual string Email { get; set; }
 
         public virtual string PhoneNumber { get; set; }
 
-        public virtual bool IsDead { get; set; }
+        public virtual Gender Gender { get; set; }
 
         public virtual DateTime BirthDate { get; set; }
 
-        public virtual bool Marriage { get; set; }
+        public virtual bool IsDead { get; set; }
 
-        public virtual bool HaveChildren { get; set; }
+        public virtual bool IsMarried { get; set; }
+
+        public virtual bool HasChildren { get; set; }
 
         public virtual List<Role> Roles { get; set; } = new List<Role>();
 
@@ -60,4 +62,10 @@ namespace WebMaze.DbStuff.Model
         public virtual MedicineCertificate MedicineCertificate { get; set; }
         public virtual List<ReceptionOfPatients> DoctorsAppointments { get; set; }
     }
+
+    public enum Gender
+    {
+        Male,
+        Female
+    };
 }

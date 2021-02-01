@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebMaze.DbStuff.Model;
 using WebMaze.Models.CustomAttribute.Medecine;
 
 namespace WebMaze.Models.HealthDepartment
@@ -12,15 +13,15 @@ namespace WebMaze.Models.HealthDepartment
 
         public virtual string LastName { get; set; }
 
-        public virtual string Gender { get; set; }
+        public virtual Gender Gender { get; set; }
 
         public virtual string Email { get; set; }
 
         public virtual string PhoneNumber { get; set; }
 
         public virtual bool IsDead { get; set; }
-        public virtual bool Marriage { get; set; }
-        public virtual bool HaveChildren { get; set; }
+        public virtual bool IsMarried { get; set; }
+        public virtual bool HasChildren { get; set; }
         public virtual decimal Balance { get; set; }
 
         public virtual DateTime BirthDate { get; set; }
