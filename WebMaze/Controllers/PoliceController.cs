@@ -8,7 +8,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebMaze.Controllers.CustomAttribute;
 using WebMaze.DbStuff.Model.Police;
+using WebMaze.DbStuff.Model.Police.Enums;
 using WebMaze.DbStuff.Repository;
 using WebMaze.Models.Account;
 using WebMaze.Models.Police;
@@ -41,7 +43,88 @@ namespace WebMaze.Controllers
 
         public IActionResult SignUp()
         {
-            return View();
+            var user = cuRepo.GetUserByLogin(User.Identity.Name);
+            var item = mapper.Map<UserVerificationViewModel>(user);
+
+            if (Enum.TryParse<Gender>(user.Gender, out var resultGender))
+            {
+                item.Sex = resultGender;
+            }
+
+            if (pmRepo.IsUserPoliceman(user, out _))
+            {
+                item.Verified = true;
+            }
+
+            return View(item);
+        }
+
+        [HttpPost]
+        public IActionResult SignUp(UserVerificationViewModel model)
+        {
+            var user = cuRepo.GetUserByLogin(User.Identity.Name);
+
+            if (ValidateItems(user.BirthDate >= new DateTime(1930, 1, 1), model.BirthdateCapable))
+            {
+                user.BirthDate = model.Birthdate;
+            }
+
+            if (ValidateItems(!string.IsNullOrEmpty(user.Gender), model.Sex != Gender.NotChosen))
+            {
+                user.Gender = model.Sex.ToString();
+            }
+
+            if (ValidateItems(!string.IsNullOrEmpty(user.FirstName), !string.IsNullOrEmpty(model.FirstName)))
+            {
+                user.FirstName = model.FirstName;
+            }
+
+            if (ValidateItems(!string.IsNullOrEmpty(user.LastName), !string.IsNullOrEmpty(model.LastName)))
+            {
+                user.LastName = model.LastName;
+            }
+
+            cuRepo.Save(user);
+            pmRepo.MakePolicemanFromUser(user);
+
+            return RedirectToAction("VerifyUser");
+        }
+
+        [OnlyPoliceman(needsRankCheck: false)]
+        public IActionResult VerifyUser()
+        {
+            return View(PolicemanRank.NotVerified);
+        }
+
+        [HttpPost]
+        public IActionResult VerifyUser(PolicemanRank rank)
+        {
+            var policeman = pmRepo.GetPolicemanByLogin(User.Identity.Name);
+            switch (rank)
+            {
+                case PolicemanRank.NotVerified:
+                    return RedirectToAction("VerifyUser");
+                case PolicemanRank.Policeman:
+                    if (policeman.User.BirthDate <= DateTime.Today.AddYears(-18))
+                    {
+                        policeman.Rank = PolicemanRank.Policeman;
+                        pmRepo.Save(policeman);
+                    }
+                    else
+                    {
+                        return View(PolicemanRank.Policeman);
+                    }
+
+                    break;
+                case PolicemanRank.MorgueEmployee:
+                    // Аутентификация в аккаунт морга. Если данного пользователя там нет, 
+                    // то предложить пользователю перейти в сайт Морга, и зарегистрироваться там
+                    return View(PolicemanRank.MorgueEmployee);
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return RedirectToAction("Account");
         }
 
         public IActionResult Account()
@@ -65,13 +148,9 @@ namespace WebMaze.Controllers
         }
 
         [Route("[controller]/[action]/{id?}")]
+        [OnlyPoliceman]
         public IActionResult Criminal(int? id)
         {
-            if(!pmRepo.IsUserPoliceman(cuRepo.GetUserByLogin(User.Identity.Name), out _))
-            {
-                return RedirectToAction("Account");
-            }
-
             if (id == null)
             {
                 return View();
@@ -80,6 +159,7 @@ namespace WebMaze.Controllers
             return RedirectToAction("Account");
         }
 
+        [OnlyPoliceman(needsRankCheck: false)]
         public IActionResult AddViolation()
         {
             var user = cuRepo.GetUserByLogin(User.Identity.Name);
@@ -182,6 +262,16 @@ namespace WebMaze.Controllers
             }
 
             return urlPathString;
+        }
+        private bool ValidateItems(bool userHasValue, bool modelHasValue)
+        {
+            if (userHasValue || !modelHasValue)
+            {
+                RedirectToAction("SignUp");
+                return false;
+            }
+
+            return true;
         }
     }
 }

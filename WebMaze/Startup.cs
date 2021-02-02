@@ -160,6 +160,8 @@ namespace WebMaze
             configurationExpression.CreateMap<CitizenUser, FoundUsersViewModel>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(u => u.FirstName + " " + u.LastName));
 
+            configurationExpression.CreateMap<CitizenUser, UserVerificationViewModel>();
+
             configurationExpression.CreateMap<MedicalInsurance, MedicalInsuranceViewModel>();
             configurationExpression.CreateMap<MedicalInsuranceViewModel, MedicalInsurance>();
 

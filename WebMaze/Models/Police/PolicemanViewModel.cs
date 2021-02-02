@@ -8,9 +8,7 @@ namespace WebMaze.Models.Police
     {
         public ProfileViewModel ProfileVM { get; set; }
 
-        public PolicemanRank Rank { get; set; } = PolicemanRank.NotVerified;
-
-        public bool IsPoliceman { get => Rank != PolicemanRank.NotVerified; }
+        public PolicemanRank? Rank { get; set; } = null;
 
         public string RankString
         {
@@ -18,9 +16,10 @@ namespace WebMaze.Models.Police
             {
                 return Rank switch
                 {
-                    PolicemanRank.NotVerified => "Не верифицирован",
+                    PolicemanRank.NotVerified => "Гражданин",
                     PolicemanRank.Policeman => "Полицейский",
                     PolicemanRank.MorgueEmployee => "Работник морга",
+                    null => "Не верифицирован",
                     _ => throw new NotImplementedException()
                 };
             }

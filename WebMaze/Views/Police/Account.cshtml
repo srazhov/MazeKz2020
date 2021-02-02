@@ -1,4 +1,5 @@
 ﻿@using WebMaze.Models.Police
+@using WebMaze.DbStuff.Model.Police.Enums
 @model PolicemanViewModel
 @{
     Layout = "_PoliceLayout";
@@ -22,7 +23,7 @@
     </div>
     <div class="col-md-9">
         <div class="row">
-            @if (!Model.IsPoliceman)
+            @if (Model.Rank == null)
             {
                 <div class="mb-4 col-12">
                     <div class="card">
@@ -38,7 +39,23 @@
                     </div>
                 </div>
             }
-            else
+            @if (Model.Rank == PolicemanRank.NotVerified)
+            {
+                <div class="mb-4 col-12">
+                    <div class="card">
+                        <div class="card-header">Статус</div>
+                        <div class="card-body">
+                            <h5 class="card-title text-warning">Повышение статуса</h5>
+                            <p class="card-text">
+                                Вы можете повысить свой статус, став полицейским, или работником морга. <br />
+                                Тем самым, вы получите разные возможности, по сравнению с этим статусом
+                            </p>
+                            <a class="btn btn-primary" asp-controller="Police" asp-action="VerifyUser">Перейти</a>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model.Rank == PolicemanRank.Policeman)
             {
                 <div class="mb-3 col-12">
                     <div class="card">

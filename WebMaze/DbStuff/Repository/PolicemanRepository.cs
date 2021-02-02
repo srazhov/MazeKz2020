@@ -12,9 +12,20 @@ namespace WebMaze.DbStuff.Repository
     {
         public PolicemanRepository(WebMazeContext context) : base(context) { }
 
+        public Policeman GetPolicemanByLogin(string userLogin)
+        {
+            return dbSet.SingleOrDefault(u => u.User.Login == userLogin);
+        }
+
         public bool IsUserPoliceman(CitizenUser user, out Policeman output)
         {
             output = dbSet.Where(p => p.User.Login == user.Login).SingleOrDefault();
+            return output != null;
+        }
+
+        public bool IsUserPoliceman(string userLogin, out Policeman output)
+        {
+            output = dbSet.Where(p => p.User.Login == userLogin).SingleOrDefault();
             return output != null;
         }
 
