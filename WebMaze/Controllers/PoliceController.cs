@@ -137,13 +137,10 @@ namespace WebMaze.Controllers
 
             if (!pmRepo.IsUserPoliceman(userItem, out Policeman policeItem))
             {
-                userItem.AvatarUrl = ChangeNullPhotoToDefault(userItem.AvatarUrl);
                 return View(new PolicemanViewModel { ProfileVM = mapper.Map<ProfileViewModel>(userItem) });
             }
 
             var result = mapper.Map<PolicemanViewModel>(policeItem);
-            result.ProfileVM.AvatarUrl = ChangeNullPhotoToDefault(result.ProfileVM.AvatarUrl);
-
             return View(result);
         }
 
@@ -252,16 +249,6 @@ namespace WebMaze.Controllers
 
             var id = new ClaimsIdentity(claims, Startup.PoliceAuthMethod);
             await HttpContext.SignInAsync(Startup.PoliceAuthMethod, new ClaimsPrincipal(id));
-        }
-        private static string ChangeNullPhotoToDefault(string urlPathString)
-        {
-            const string defaultUserLogoPath = "/image/Police/police_default_user_logo.png";
-            if (string.IsNullOrEmpty(urlPathString))
-            {
-                urlPathString = defaultUserLogoPath;
-            }
-
-            return urlPathString;
         }
         private bool ValidateItems(bool userHasValue, bool modelHasValue)
         {

@@ -14,6 +14,24 @@
         </p>
         <p><small class="text-muted">*Став полицейским, вы не избежите наказания за совершенные преступления</small></p>
     </div>
+    @if (Model != PolicemanRank.NotVerified)
+    {
+        <div class="col-auto mb-4">
+            @if (Model == PolicemanRank.Policeman)
+            {
+                <p class="lead text-danger">
+                    Внимание, чтобы стать полицейским, необходимо, чтобы вам было как минимум 18 лет.
+                    Возвращайтесь, когда подрастете
+                </p>
+            }
+            else
+            {
+                <p class="lead text-danger">
+                    Внимание, мы не нашли ваши данные на сайте Морга. <a href="#">Чтобы продолжить, вам надо зарегистрироваться на их сайте</a>
+                </p>
+            }
+        </div>
+    }
     <div class="col-md-4">
         <div class="card mb-4 shadow-sm border-primary">
             <div class="card-header">
@@ -47,7 +65,7 @@
             <div class="card-body">
                 <div class="card-subtitle mb-2 text-muted">*Необходимо для патологоанатомов*</div>
                 <p class="card-text">
-                    Для патологоанатомов необходимо присутствие полицейского при вскрытии. 
+                    Для патологоанатомов необходимо присутствие полицейского при вскрытии.
                     Поэтому чтобы упростить вызов полицейского, и получить приоритет, вам стоит верифицировать аккаунт Морга в Полиции
                 </p>
                 <ul class="list-group mt-0 mb-3">
