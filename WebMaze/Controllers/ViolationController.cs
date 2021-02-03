@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using WebMaze.DbStuff.Model.Police;
+using WebMaze.DbStuff.Model.Police.Enums;
 using WebMaze.DbStuff.Repository;
 using WebMaze.Models.Police.Violation;
 
@@ -15,16 +16,19 @@ namespace WebMaze.Controllers
     {
         private readonly IMapper mapper;
         private readonly ViolationRepository violationRepo;
+        private readonly PolicemanRepository policeRepository;
         private readonly CitizenUserRepository userRepo;
 
         public ViolationController(
             IMapper mapper,
             ViolationRepository violationRepo,
-            CitizenUserRepository userRepo)
+            CitizenUserRepository userRepo,
+            PolicemanRepository policeRepository)
         {
             this.mapper = mapper;
             this.violationRepo = violationRepo;
             this.userRepo = userRepo;
+            this.policeRepository = policeRepository;
         }
 
         [HttpGet("{max?}")]
@@ -73,6 +77,34 @@ namespace WebMaze.Controllers
 
             item.RedirectLink = Url.Action("Account", "Police");
             return Ok(item);
+        }
+
+        [HttpPost("TakeViolationCase")]
+        public ActionResult TakeViolationCase(ConfirmTakeViolationViewModel model)
+        {
+            var item = violationRepo.Get(model.Id);
+            var policeman = policeRepository.GetPolicemanByLogin(model.PolicemanLogin);
+            if (item == null ||
+                (model.TakeViolation && item.ViewingPoliceman != null) ||
+                (!model.TakeViolation && item.ViewingPoliceman != policeman))
+            {
+                return BadRequest();
+            }
+
+            if (model.TakeViolation)
+            {
+                item.ViewingPoliceman = policeman;
+                item.Status = CurrentStatus.Started;
+            }
+            else
+            {
+                item.ViewingPoliceman = null;
+                item.Status = CurrentStatus.NotStarted;
+            }
+
+            violationRepo.Save(item);
+
+            return Ok();
         }
     }
 }

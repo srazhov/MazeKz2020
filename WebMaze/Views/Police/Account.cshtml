@@ -15,9 +15,11 @@
                 <img src="@Model.ProfileVM.AvatarUrl" class="rounded img-fluid" />
                 <hr />
             </div>
-            <div class="card-body">
-                <h5 class="card-title">@Model.ProfileVM.Login</h5>
-                <p class="card-text text-success">@Model.RankString</p>
+            <div class="card-body text-center">
+                <h5 class="card-title mb-1">@Model.ProfileVM.Login</h5>
+                <p class="mb-3 card-text text-success">@Model.RankString</p>
+                <a class="mt-0 mb-2 btn btn-outline-info w-100" asp-controller="Police" asp-action="SignUp">Мои данные</a>
+                <a class="mt-0 btn btn-outline-warning w-100" asp-controller="Police" asp-action="VerifyUser">Сменить специализацию</a>
             </div>
         </div>
     </div>

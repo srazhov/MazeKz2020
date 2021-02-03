@@ -1,0 +1,73 @@
+﻿@using WebMaze.DbStuff.Model.Police.Enums
+@model WebMaze.Models.Police.Violation.CriminalItemViewModel
+@{
+    Layout = "_PoliceLayout";
+    ViewBag.Title = "Нарушение пользователя";
+    var offenseName = Model.OffenseType == TypeOfOffense.Administrative ? "Административное" : "Уголовное";
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            const data = {};
+            data.status = "@Model.Status";
+            ViolationInstructionsToExtractData($('#violation'), data);
+        });
+    </script>
+}
+
+<h2 class="mb-3">Преступление No.@Model.Id</h2>
+<hr class="mb-2" />
+
+<div class="row">
+    <div class="col-md-3">
+        <img class="img-fluid mb-2" src="@Model.BlamedUserAvatar">
+        <p class="text-center">Фото обвиняемого</p>
+        <hr />
+        <div class="row" id="violation">
+            <label class="col-4">Статус:</label>
+            <p class="col-8 v-status"></p>
+            @if (Model.Status != CurrentStatus.NotStarted)
+            {
+                <label class="col-4">Делом занимается:</label>
+                <p class="col-8">@Model.ViewingPolicemanName</p>
+            }
+        </div>
+    </div>
+    <div class="offset-md-1 col-md-8">
+        <div class="row">
+            <label class="col-6 col-md-4">Обвиняемый:</label>
+            <p class="col-6 form-control">@Model.BlamedUserName</p>
+        </div>
+        <div class="row">
+            <label class="col-6 col-md-4">Обвинитель:</label>
+            <p class="col-6 form-control">@Model.BlamingUserName</p>
+        </div>
+        <div class="row">
+            <label class="col-6 col-md-4">Дата:</label>
+            <p class="col-6 form-control">@Model.Date.ToString("dd MMMM yyyy")</p>
+        </div>
+        <div class="row">
+            <label class="col-6 col-md-4">Тип правонарушения:</label>
+            <p class="col-6 form-control">@offenseName</p>
+        </div>
+        <div class="row mb-3">
+            <label class="col-12 col-md-4">Заявление от обвинителя:</label>
+            <textarea class="col-12 col-md-6 form-control" rows="5" disabled>@Model.Explanation</textarea>
+        </div>
+        @if (Model.Status == CurrentStatus.NotStarted)
+        {
+            <button id="ConfirmTakeViolation" type="submit" data-login="@User.Identity.Name"
+                    data-value="@Model.Id" data-confirm="true" class="btn btn-danger">
+                Взяться за это дело
+            </button>
+        }
+        else if (Model.Status == CurrentStatus.Started && Model.PolicemanLogin == User.Identity.Name)
+        {
+            <button id="ConfirmTakeViolation" type="submit" data-login="@User.Identity.Name"
+                    data-value="@Model.Id" data-confirm="false" class="btn btn-outline-danger">
+                Отказаться от дела
+            </button>
+        }
+    </div>
+</div>

@@ -24,14 +24,16 @@ namespace WebMaze.Controllers
         private readonly IMapper mapper;
         private readonly PolicemanRepository pmRepo;
         private readonly CitizenUserRepository cuRepo;
+        private readonly ViolationRepository violationRepo;
 
         public PoliceController(IMapper mapper,
             PolicemanRepository pmRepo,
-            CitizenUserRepository cuRepo)
+            CitizenUserRepository cuRepo, ViolationRepository violationRepo)
         {
             this.mapper = mapper;
             this.pmRepo = pmRepo;
             this.cuRepo = cuRepo;
+            this.violationRepo = violationRepo;
         }
 
         [HttpPost]
@@ -146,14 +148,21 @@ namespace WebMaze.Controllers
 
         [Route("[controller]/[action]/{id?}")]
         [OnlyPoliceman]
-        public IActionResult Criminal(int? id)
+        public IActionResult Criminal(long? id)
         {
             if (id == null)
             {
                 return View();
             }
 
-            return RedirectToAction("Account");
+            var violation = violationRepo.Get(id.GetValueOrDefault());
+            if(violation == null)
+            {
+                return View();
+            }
+
+            var item = mapper.Map<CriminalItemViewModel>(violation);
+            return View("CriminalItem", item);
         }
 
         [OnlyPoliceman(needsRankCheck: false)]

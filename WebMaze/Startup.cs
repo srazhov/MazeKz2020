@@ -83,8 +83,8 @@ namespace WebMaze
             RegistrationRepository(services);
 
             services.AddScoped(s => new UserValidator(
-                s.GetService<CitizenUserRepository>(), 
-                requiredPasswordLength:3));
+                s.GetService<CitizenUserRepository>(),
+                requiredPasswordLength: 3));
 
             services.AddScoped(s => new UserService(s.GetService<CitizenUserRepository>(),
                 s.GetService<RoleRepository>(),
@@ -142,7 +142,7 @@ namespace WebMaze
 
             configurationExpression.CreateMap<UserTask, UserTaskViewModel>();
             configurationExpression.CreateMap<UserTaskViewModel, UserTask>();
-            
+
             configurationExpression.CreateMap<Certificate, CertificateViewModel>()
                 .ForMember(dest => dest.OwnerLogin, opt => opt.MapFrom(src => src.Owner.Login));
 
@@ -153,7 +153,7 @@ namespace WebMaze
 
             configurationExpression.CreateMap<Violation, ViolationItemViewModel>()
                 .ForMember(dest => dest.BlamedUserName, opt => opt.MapFrom(v => v.BlamedUser.FirstName + " " + v.BlamedUser.LastName))
-                .ForMember(dest => dest.PolicemanName, opt => opt.MapFrom(v => v.ViewingPoliceman.User.FirstName + " " + v.BlamedUser.LastName));
+                .ForMember(dest => dest.PolicemanName, opt => opt.MapFrom(v => v.ViewingPoliceman.User.FirstName + " " + v.ViewingPoliceman.User.LastName));
 
             configurationExpression.CreateMap<ViolationDeclarationViewModel, Violation>().ReverseMap();
 
@@ -161,6 +161,13 @@ namespace WebMaze
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(u => u.FirstName + " " + u.LastName));
 
             configurationExpression.CreateMap<CitizenUser, UserVerificationViewModel>();
+
+            configurationExpression.CreateMap<Violation, CriminalItemViewModel>()
+                .ForMember(dest => dest.BlamingUserName, opt => opt.MapFrom(v => v.BlamingUser.FirstName + " " + v.BlamingUser.LastName))
+                .ForMember(dest => dest.BlamedUserName, opt => opt.MapFrom(v => v.BlamedUser.FirstName + " " + v.BlamedUser.LastName))
+                .ForMember(dest => dest.ViewingPolicemanName, opt => opt.MapFrom(v => v.ViewingPoliceman.User.FirstName + " " + v.ViewingPoliceman.User.LastName))
+                .ForMember(dest => dest.PolicemanLogin, opt => opt.MapFrom(v => v.ViewingPoliceman.User.Login))
+                .ForMember(dest => dest.BlamedUserAvatar, opt => opt.MapFrom(v => v.BlamedUser.AvatarUrl));
 
             configurationExpression.CreateMap<MedicalInsurance, MedicalInsuranceViewModel>();
             configurationExpression.CreateMap<MedicalInsuranceViewModel, MedicalInsurance>();

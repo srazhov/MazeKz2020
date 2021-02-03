@@ -118,9 +118,8 @@ $(document).ready(function () {
             data: SerializeForm(form),
             success: function (data) {
                 AddDataItem(data.violations, 'violation', ViolationInstructionsToExtractData);
-                $('violation-counter').text('Найдено результатов: ' + data.foundCount + ' (' + data.foundOnThisPage + ' на этой странице)');
+                $('#violation-counter').text('Найдено результатов: ' + data.foundCount + ' (' + data.foundOnThisPage + ' на этой странице)');
                 if (data.violations.length == 0) {
-                    $('#violation-counter').text('');
                     $('.violation-not-found').show();
                 }
             },
@@ -141,6 +140,27 @@ $(document).ready(function () {
             AddDataItem(data, 'violation', ViolationInstructionsToExtractData);
         });
     }
+
+    $('#ConfirmTakeViolation').click(function () {
+        const data = {
+            id: Number($(this).attr('data-value')),
+            policemanLogin: $(this).attr('data-login'),
+            takeViolation: ($(this).attr('data-confirm') === 'true')
+        };
+        $.ajax({
+            type: 'POST',
+            url: '/api/violation/TakeViolationCase',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(data),
+            success: function () {
+                alert('Обновление страницы');
+                location.reload();
+            }
+        });
+    });
 });
 
 function SerializeForm(form) {
