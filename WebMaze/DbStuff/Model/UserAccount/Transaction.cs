@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,15 +9,17 @@ namespace WebMaze.DbStuff.Model.UserAccount
 {
     public class Transaction : BaseModel
     {
-        public DateTime Date;
+        [Required]
+        public virtual DateTime Date { get; set; }
 
-        public string Description { get; set; }
+        public virtual string Description { get; set; }
 
-        public decimal Amount { get; set; }
+        [Column(TypeName = "money")]
+        public virtual decimal Amount { get; set; }
 
-        public TransactionCategory Category { get; set; }
+        public virtual TransactionCategory Category { get; set; }
         
-        public TransactionType Type { get; set; }
+        public virtual TransactionType Type { get; set; }
 
         public virtual CitizenUser Sender { get; set; }
 
@@ -24,6 +28,7 @@ namespace WebMaze.DbStuff.Model.UserAccount
 
     public enum TransactionCategory
     {
+        Fees,
         Shopping,
         Income,
         Education,
@@ -31,13 +36,10 @@ namespace WebMaze.DbStuff.Model.UserAccount
         Transport,
         Entertainment,
         Food,
-        Travel,
-        Fees,
         Taxes,
         Rent,
         Pension,
-        Bills,
-        Atm
+        Donation
     }
 
     public enum TransactionType

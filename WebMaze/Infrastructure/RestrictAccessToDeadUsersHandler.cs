@@ -20,21 +20,21 @@ namespace WebMaze.Infrastructure
         {
             var currentUserLogin = context.User.Identity?.Name;
 
-            if (currentUserLogin == null)
+            if (string.IsNullOrEmpty(currentUserLogin))
             {
                 context.Fail();
                 return Task.CompletedTask;
             }
 
-            var deadUserLogins = citizenUserRepository.GetDeadUsers().Select(u => u.Login).ToList();
+            var currentUser = citizenUserRepository.GetUserByLogin(currentUserLogin);
 
-            if (!deadUserLogins.Contains(currentUserLogin))
+            if (currentUser.IsDead)
             {
-                context.Succeed(requirement);
+                context.Fail();
             }
             else
             {
-                context.Fail();
+                context.Succeed(requirement);
             }
 
             return Task.CompletedTask;

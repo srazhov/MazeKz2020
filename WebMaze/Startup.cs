@@ -37,6 +37,7 @@ using Microsoft.AspNetCore.Authorization;
 using WebMaze.Infrastructure;
 using WebMaze.Models.HDDoctor;
 using WebMaze.Models.HDManager;
+using WebMaze.Models.Transactions;
 
 namespace WebMaze
 {
@@ -104,6 +105,9 @@ namespace WebMaze
             services.AddScoped(s => new UserService(s.GetService<CitizenUserRepository>(),
                 s.GetService<RoleRepository>(),
                 s.GetService<IHttpContextAccessor>()));
+
+            services.AddScoped(s => new TransactionService(s.GetService<TransactionRepository>(),
+                s.GetService<CitizenUserRepository>()));
 
             services.AddHttpContextAccessor();
 
@@ -205,6 +209,12 @@ namespace WebMaze
 
             configurationExpression.CreateMap<RoleViewModel, Role>();
 
+            configurationExpression.CreateMap<Transaction, TransactionViewModel>()
+                .ForMember(dest => dest.SenderLogin, opt => opt.MapFrom(src => src.Sender.Login))
+                .ForMember(dest => dest.RecipientLogin, opt => opt.MapFrom(src => src.Recipient.Login));
+
+            configurationExpression.CreateMap<TransactionViewModel, Transaction>();
+
             configurationExpression.CreateMap<MedicineCertificate, MedicineCertificateViewModel>();
             configurationExpression.CreateMap<MedicineCertificateViewModel, MedicineCertificate>();
 
@@ -245,6 +255,7 @@ namespace WebMaze
             services.AddScoped(s => new UserTaskRepository(s.GetService<WebMazeContext>()));
             services.AddScoped(s => new CertificateRepository(s.GetService<WebMazeContext>()));
             services.AddScoped(s => new RoleRepository(s.GetService<WebMazeContext>()));
+            services.AddScoped(s => new TransactionRepository(s.GetService<WebMazeContext>()));
 
             services.AddScoped(s => new MedicalInsuranceRepository(s.GetService<WebMazeContext>()));
             services.AddScoped(s => new MedicineCertificateRepository(s.GetService<WebMazeContext>()));

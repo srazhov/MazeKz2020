@@ -37,6 +37,8 @@ namespace WebMaze.DbStuff
 
         public DbSet<Certificate> Certificates { get; set; }
 
+        public DbSet<Transaction> Transactions { get; set; }
+
         public DbSet<MedicalInsurance> MedicalInsurances { get; set; }
         public DbSet<MedicineCertificate> MedicineCertificates { get; set; }
         public DbSet<ReceptionOfPatients> ReceptionOfPatients { get; set; }
@@ -57,8 +59,8 @@ namespace WebMaze.DbStuff
 
             modelBuilder
                 .Entity<CitizenUser>()
-                .HasMany(p => p.Roles)
-                .WithMany(p => p.Users)
+                .HasMany(citizenUser => citizenUser.Roles)
+                .WithMany(role => role.Users)
                 .UsingEntity(j => j.ToTable("CitizenUserRoles"));
 
             modelBuilder.Entity<CitizenUser>()
@@ -77,11 +79,18 @@ namespace WebMaze.DbStuff
                 .HasMany(x => x.DoctorsAppointments)
                 .WithOne(x => x.EnrolledCitizen);
 
-            
             modelBuilder.Entity<CitizenUser>()
-                .HasMany(citizen => citizen.Certificates)
+                .HasMany(citizenUser => citizenUser.Certificates)
                 .WithOne(certificate => certificate.Owner);
 
+            modelBuilder.Entity<CitizenUser>()
+                .HasMany(citizenUser => citizenUser.SentTransactions)
+                .WithOne(transaction => transaction.Sender);
+
+            modelBuilder.Entity<CitizenUser>()
+                .HasMany(citizenUser => citizenUser.ReceivedTransactions)
+                .WithOne(transaction => transaction.Recipient);
+            
             base.OnModelCreating(modelBuilder);
         }
     }

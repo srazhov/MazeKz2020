@@ -55,6 +55,10 @@ namespace WebMaze.DbStuff.Model
 
         public virtual List<Certificate> Certificates { get; set; } = new List<Certificate>();
 
+        public virtual List<Transaction> SentTransactions { get; set; } = new List<Transaction>();
+
+        public virtual List<Transaction> ReceivedTransactions { get; set; } = new List<Transaction>();
+
         public virtual MedicalInsurance MedicalInsurance { get; set; }
         public virtual List<RecordForm> RecordForms { get; set; }
         public virtual MedicineCertificate MedicineCertificate { get; set; }

@@ -1,0 +1,25 @@
+﻿@using WebMaze.Models.Transactions
+@using WebMaze.DbStuff.Model.UserAccount
+@model TransactionViewModel
+
+<h2>Edit transaction <a asp-action="Index" class="btn btn-sm btn-secondary">Back</a></h2>
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Date" />
+    <input type="hidden" asp-for="SenderLogin" />
+    <input type="hidden" asp-for="RecipientLogin" />
+    <input type="hidden" asp-for="Type" />
+    <input type="hidden" asp-for="Amount" />
+    <div class="form-group">
+        <label asp-for="Category"></label>
+        <select asp-for="Category" asp-items="Html.GetEnumSelectList<TransactionCategory>()"></select>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <input asp-for="Description" class="form-control" />
+    </div>
+    <div class="text-center">
+        <button type="submit" class="btn btn-sm btn-primary">Update</button>
+    </div>
+</form>

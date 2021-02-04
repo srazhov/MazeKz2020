@@ -75,7 +75,8 @@ namespace WebMaze.Controllers
 
             if (!ModelState.IsValid)
             {
-                var errorMessages = ModelState.Values.SelectMany(modelStateEntry => modelStateEntry.Errors.Select(b => b.ErrorMessage)).ToList();
+                var errorMessages = ModelState.Values
+                    .SelectMany(modelStateEntry => modelStateEntry.Errors.Select(b => b.ErrorMessage)).ToList();
                 return BadRequest(errorMessages);
             }
 
@@ -83,15 +84,15 @@ namespace WebMaze.Controllers
 
             if (citizenUser == null)
             {
-                var errorMessages = new List<string>() { $"Citizen with Login = {certificateViewModel.OwnerLogin} not found" };
-                return BadRequest(errorMessages);
+                return BadRequest(new List<string>() { $"Citizen with Login = {certificateViewModel.OwnerLogin} not found" });
             }
 
-            if (citizenUser.Certificates.Any(c => string.Equals(c.Name, certificateViewModel.Name, StringComparison.OrdinalIgnoreCase) && c.Status == CertificateStatus.Valid))
+            if (citizenUser.Certificates.Any(c =>
+                string.Equals(c.Name, certificateViewModel.Name, StringComparison.OrdinalIgnoreCase) &&
+                c.Status == CertificateStatus.Valid))
             {
-                var errorMessages = new List<string>()
-                    {$"The citizen {certificateViewModel.OwnerLogin} already has a valid certificate."};
-                return BadRequest(errorMessages);
+                return BadRequest(new List<string>()
+                    {$"The citizen {certificateViewModel.OwnerLogin} already has a valid certificate."});
             }
 
             var certificate = mapper.Map<Certificate>(certificateViewModel);
@@ -109,28 +110,26 @@ namespace WebMaze.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var errorMessages = ModelState.Values.SelectMany(modelStateEntry => modelStateEntry.Errors.Select(b => b.ErrorMessage)).ToList();
+                var errorMessages = ModelState.Values
+                    .SelectMany(modelStateEntry => modelStateEntry.Errors.Select(b => b.ErrorMessage)).ToList();
                 return BadRequest(errorMessages);
             }
 
             if (id != certificateViewModel.Id)
             {
-                var errorMessages = new List<string>() { "Certificate ID mismatch" };
-                return BadRequest(errorMessages);
+                return BadRequest(new List<string>() { "Certificate ID mismatch" });
             }
 
             if (!await certificateRepository.Exists(id))
             {
-                var errorMessages = new List<string>() { $"Certificate with ID = {id} not found" };
-                return NotFound(errorMessages);
+                return NotFound(new List<string>() { $"Certificate with ID = {id} not found" });
             }
 
             var citizenUser = citizenUserRepository.GetUserByLogin(certificateViewModel.OwnerLogin);
 
             if (citizenUser == null)
             {
-                var errorMessages = new List<string>() { $"CitizenUser with Login = {certificateViewModel.OwnerLogin} not found" };
-                return NotFound(errorMessages);
+                return NotFound(new List<string>() { $"CitizenUser with Login = {certificateViewModel.OwnerLogin} not found" });
             }
 
             var validCertificate = citizenUser.Certificates.SingleOrDefault(c =>
@@ -140,9 +139,8 @@ namespace WebMaze.Controllers
             // Check if the valid certificate is not the input certificate.
             if (validCertificate.Id != 0 && validCertificate.Id != certificateViewModel.Id)
             {
-                var errorMessages = new List<string>()
-                    {$"The citizen {certificateViewModel.OwnerLogin} already has a valid certificate."};
-                return BadRequest(errorMessages);
+                return BadRequest(new List<string>()
+                    {$"The citizen {certificateViewModel.OwnerLogin} already has a valid certificate."});
             }
 
             mapper.Map(certificateViewModel, validCertificate);
@@ -158,8 +156,7 @@ namespace WebMaze.Controllers
         {
             if (!await certificateRepository.Exists(id))
             {
-                var errorMessages = new List<string>() { $"Certificate with ID = {id} not found" };
-                return NotFound(errorMessages);
+                return NotFound(new List<string>() { $"Certificate with ID = {id} not found" });
             }
 
             await certificateRepository.DeleteAsync(id);

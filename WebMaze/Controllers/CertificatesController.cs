@@ -66,10 +66,7 @@ namespace WebMaze.Controllers
 
                 if (!operationResult.Succeeded)
                 {
-                    foreach (var error in operationResult.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error);
-                    }
+                    operationResult.Errors.ForEach(error => ModelState.AddModelError(string.Empty, error));
                 }
             }
             
@@ -85,10 +82,7 @@ namespace WebMaze.Controllers
             
             if (!operationResult.Succeeded)
             {
-                foreach (var error in operationResult.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error);
-                }
+                operationResult.Errors.ForEach(error => ModelState.AddModelError(string.Empty, error));
             }
 
             var urlReferrer = Request.Headers["Referer"].ToString();
@@ -127,10 +121,7 @@ namespace WebMaze.Controllers
 
             if (!operationResult.Succeeded)
             {
-                foreach (var error in operationResult.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error);
-                }
+                operationResult.Errors.ForEach(error => ModelState.AddModelError(string.Empty, error));
             }
 
             var urlReferrer = Request.Headers["Referer"].ToString();
@@ -154,10 +145,7 @@ namespace WebMaze.Controllers
 
                 if (!operationResult.Succeeded)
                 {
-                    foreach (var error in operationResult.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error);
-                    }
+                    operationResult.Errors.ForEach(error => ModelState.AddModelError(string.Empty, error));
                 }
             }
 
@@ -172,10 +160,7 @@ namespace WebMaze.Controllers
 
             if (!operationResult.Succeeded)
             {
-                foreach (var error in operationResult.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error);
-                }
+                operationResult.Errors.ForEach(error => ModelState.AddModelError(string.Empty, error));
             }
 
             var urlReferrer = Request.Headers["Referer"].ToString();
