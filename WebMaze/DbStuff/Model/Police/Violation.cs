@@ -16,7 +16,11 @@ namespace WebMaze.DbStuff.Model.Police
         
         public DateTime Date { get; set; }
         
+        public DateTime? ConfirmDate { get; set; }
+        
         public string Explanation { get; set; }
+
+        public string PolicemanCommentary { get; set; }
 
         public TypeOfOffense OffenseType { get; set; }
 

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using WebMaze.DbStuff.Model.Police;
 using WebMaze.DbStuff.Model.Police.Enums;
@@ -91,6 +92,11 @@ namespace WebMaze.Controllers
                 return BadRequest();
             }
 
+            if (item.BlamedUser.Login == model.PolicemanLogin || item.BlamingUser.Login == model.PolicemanLogin)
+            {
+                return BadRequest();
+            }
+
             if (model.TakeViolation)
             {
                 item.ViewingPoliceman = policeman;
@@ -103,6 +109,62 @@ namespace WebMaze.Controllers
             }
 
             violationRepo.Save(item);
+
+            return Ok();
+        }
+
+        [HttpPost("MakeDecision")]
+        public ActionResult MakeDecision(CriminalItemViewModel model)
+        {
+            var violation = violationRepo.Get(model.Id);
+            if (violation == null || violation.ViewingPoliceman == null || violation.Status != CurrentStatus.Started)
+            {
+                return BadRequest();
+            }
+
+            violation.OffenseType = model.OffenseType;
+            violation.Status = CurrentStatus.Accepted;
+            violation.PolicemanCommentary = model.PolicemanCommentary;
+            violation.ConfirmDate = DateTime.Today;
+
+            if (model.OffenseType == TypeOfOffense.Administrative)
+            {
+                if (model.Penalty == null)
+                {
+                    return BadRequest();
+                }
+
+                violation.Penalty = model.Penalty;
+                violation.TermOfPunishment = null;
+            }
+            else
+            {
+                if (model.TermOfPunishment == null)
+                {
+                    return BadRequest();
+                }
+
+                violation.TermOfPunishment = model.TermOfPunishment;
+                violation.Penalty = null;
+            }
+
+            violationRepo.Save(violation);
+            return Ok();
+        }
+
+        [HttpPost("DenyViolation")]
+        public ActionResult DenyViolation(ConfirmTakeViolationViewModel model)
+        {
+            var violation = violationRepo.Get(model.Id);
+            if(violation == null || violation.Status != CurrentStatus.Started)
+            {
+                return BadRequest();
+            }
+
+            violation.Status = CurrentStatus.Denied;
+            violation.PolicemanCommentary = model.PolicemanCommentary;
+            violation.ConfirmDate = DateTime.Today;
+            violationRepo.Save(violation);
 
             return Ok();
         }

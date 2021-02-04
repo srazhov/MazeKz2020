@@ -12,5 +12,7 @@ namespace WebMaze.Models.Police.Violation
         public string PolicemanLogin { get; set; }
 
         public bool TakeViolation { get; set; }
+
+        public string PolicemanCommentary { get; set; }
     }
 }

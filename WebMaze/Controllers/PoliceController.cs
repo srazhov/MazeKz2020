@@ -150,18 +150,22 @@ namespace WebMaze.Controllers
         [OnlyPoliceman]
         public IActionResult Criminal(long? id)
         {
-            if (id == null)
+            if (id == -1)
             {
-                return View();
+                return View(true);
             }
 
             var violation = violationRepo.Get(id.GetValueOrDefault());
-            if(violation == null)
+            if (violation == null)
             {
-                return View();
+                return View(false);
             }
 
             var item = mapper.Map<CriminalItemViewModel>(violation);
+            item.PolicemanCanTakeThisViolation =
+                violation.BlamingUser?.Login != User.Identity.Name
+                && violation.BlamedUser?.Login != User.Identity.Name;
+            
             return View("CriminalItem", item);
         }
 

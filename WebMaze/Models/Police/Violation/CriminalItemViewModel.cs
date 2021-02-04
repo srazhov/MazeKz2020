@@ -10,7 +10,9 @@ namespace WebMaze.Models.Police.Violation
     {
         private string avatarUrl;
 
-        public int Id { get; set; }
+        public long Id { get; set; }
+
+        public bool PolicemanCanTakeThisViolation { get; set; }
 
         public string BlamingUserName { get; set; }
 
@@ -28,7 +30,11 @@ namespace WebMaze.Models.Police.Violation
 
         public DateTime Date { get; set; }
 
+        public DateTime? ConfirmDate { get; set; }
+
         public string Explanation { get; set; }
+
+        public string PolicemanCommentary { get; set; }
 
         public TypeOfOffense OffenseType { get; set; }
 

@@ -161,6 +161,56 @@ $(document).ready(function () {
             }
         });
     });
+
+    $('#DenyViolationButton').click(function () {
+        const data = {
+            Id: Number($('input[name="Id"]').val()),
+            PolicemanCommentary: $('textarea[name=PolicemanCommentary]').val()
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/api/violation/DenyViolation',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(data),
+            success: function () {
+                alert('Успешно, Обновление страницы');
+                location.reload();
+            }
+        });
+    });
+
+    OnChangeoffenseType($('#changeOffenseType'));
+    $('#changeOffenseType').change(function () { OnChangeoffenseType($(this)); });
+
+    $('#MakeViolationDecision').submit(function (event) {
+        if ($(this)[0].checkValidity() === true) {
+            const data = {
+                Id: Number($(this).find('input[name="Id"]').val()),
+                OffenseType: $(this).find('input[name="OffenseType"]').val(),
+                Penalty: Number($(this).find('input[name="Penalty"]').val()),
+                TermOfPunishment: $(this).find('input[name="TermOfPunishment"]').val(),
+                PolicemanCommentary: $(this).find('textarea[name="PolicemanCommentary"]').val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify(data),
+                success: function () {
+                    alert('Успешно, Обновление страницы');
+                    location.reload();
+                }
+            });
+        }
+    });
 });
 
 function SerializeForm(form) {
@@ -221,5 +271,16 @@ function ViolationInstructionsToExtractData(clone, data) {
         case 'Accepted':
             clone.find('.v-status').text('Принято').addClass('text-success');
             break;
+    }
+}
+
+function OnChangeoffenseType(e) {
+    if (e.val() == 'Administrative') {
+        $('#criminalCase').attr('style', 'display: none!important;');
+        $('#administrativeCase').removeAttr('style').find('input').attr('required', true);
+    }
+    else if (e.val() == 'Criminal') {
+        $('#administrativeCase').attr('style', 'display: none!important;').find('input').removeAttr('required');
+        $('#criminalCase').removeAttr('style');
     }
 }
