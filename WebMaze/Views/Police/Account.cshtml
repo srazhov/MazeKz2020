@@ -1,30 +1,9 @@
 ﻿@using WebMaze.Models.Police
+@using WebMaze.DbStuff.Model.Police.Enums
 @model PolicemanViewModel
 @{
     Layout = "_PoliceLayout";
     ViewBag.Title = $"{Model.ProfileVM.Login}";
-    var status = "Полицейский";
-    var infoCard = new CardViewModel
-    {
-        SubTitle = "Сертификаты",
-        Title = "Управление сертификатами",
-        Description = "Управляйте своими сертификатами",
-        Link = Url.Action("Items", "PoliceCertificate"),
-        LinkText = "Перейти"
-    };
-
-    if (!Model.HasValidCertificate)
-    {
-        status = "Не имеет сертификат";
-        infoCard.Title = "Получить сертификат";
-        infoCard.Description = "Внимание, у вас в данный момент нет действующего сертификата. " +
-            "Чтобы получить его, вам необходимо перейти в сайт Градоуправления, и подтвердить там ваш сертификат";
-        infoCard.Link = Url.Action("SignUp", "Police");
-    }
-}
-@section Scripts
-{
-    <script src="~/js/Police.js"></script>
 }
 
 <h2 class="mb-4">Тестовый личный кабинет пользователя @Model.ProfileVM.Login</h2>
@@ -36,57 +15,93 @@
                 <img src="@Model.ProfileVM.AvatarUrl" class="rounded img-fluid" />
                 <hr />
             </div>
-            <div class="card-body">
-                <h5 class="card-title">@Model.ProfileVM.Login</h5>
-                <p class="card-text text-success">@status</p>
+            <div class="card-body text-center">
+                <h5 class="card-title mb-1">@Model.ProfileVM.Login</h5>
+                <p class="mb-3 card-text text-success">@Model.RankString</p>
+                <a class="mt-0 mb-2 btn btn-outline-info w-100" asp-controller="Police" asp-action="SignUp">Мои данные</a>
+                <a class="mt-0 btn btn-outline-warning w-100" asp-controller="Police" asp-action="VerifyUser">Сменить специализацию</a>
             </div>
         </div>
     </div>
     <div class="col-md-9">
         <div class="row">
-            <div class="mb-4 col-12">
-                <div class="card">
-                    <div class="card-header">@infoCard.SubTitle</div>
-                    <div class="card-body">
-                        <h5 class="card-title">@infoCard.Title</h5>
-                        <p class="card-text">@infoCard.Description</p>
-                        <a class="btn btn-primary" href="@infoCard.Link">@infoCard.LinkText</a>
+            @if (Model.Rank == null)
+            {
+                <div class="mb-4 col-12">
+                    <div class="card">
+                        <div class="card-header">Верификация</div>
+                        <div class="card-body">
+                            <h5 class="card-title text-warning">Внимание</h5>
+                            <p class="card-text">
+                                Внимание, вы не прошли подтверждение аккаунта. <br>
+                                Чтобы получить доступ ко всем действиям, вам надо пройти верификацию аккаунта
+                            </p>
+                            <a class="btn btn-primary" asp-controller="Police" asp-action="SignUp">Перейти</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="mb-4 col-12">
-                <div class="card">
-                    <div class="card-header">Преступления</div>
-                    <div class="card-body row">
-                        <div class="col-12">
-                            <h5 class="card-title">Последние преступления в городе</h5>
+            }
+            @if (Model.Rank == PolicemanRank.NotVerified)
+            {
+                <div class="mb-4 col-12">
+                    <div class="card">
+                        <div class="card-header">Статус</div>
+                        <div class="card-body">
+                            <h5 class="card-title text-warning">Повышение статуса</h5>
+                            <p class="card-text">
+                                Вы можете повысить свой статус, став полицейским, или работником морга. <br />
+                                Тем самым, вы получите разные возможности, по сравнению с этим статусом
+                            </p>
+                            <a class="btn btn-primary" asp-controller="Police" asp-action="VerifyUser">Перейти</a>
                         </div>
-                        <div class="col-12">
-                            <ul class="list-group mb-3 violations-list-container">
-                                <li class="text-right list-group-item list-group-item-action violation-list-item">
-                                    <div class="row">
-                                        <p class="col m-0 violation-user-field"></p>
-                                        <p class="col m-0 violation-policeman-field"></p>
-                                        <p class="col m-0 violation-date-field"></p>
-                                    </div>
-                                    <a class="stretched-link violation-link"></a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-12 row justify-content-center">
+                    </div>
+                </div>
+            }
+            @if (Model.Rank == PolicemanRank.Policeman)
+            {
+                <div class="mb-3 col-12">
+                    <div class="card">
+                        <div class="card-header">Преступления</div>
+                        <div class="card-body row">
                             <div class="col-12">
-                                <h5 class="text-center">Not Found</h5>
+                                <h5 class="card-title">Последние преступления в городе</h5>
                             </div>
-                            <div class="violation-not-found mb-3 col-6">
-                                <img class="img-fluid" src="~/image/Police/not-found-img.jpg" />
+                            <div class="col-12">
+                                <ul class="list-group mb-3 violation-container" data-max="5">
+                                    <li class="text-right list-group-item list-group-item-action violation-item">
+                                        <div class="row">
+                                            <p class="col m-0 v-user"></p>
+                                            <p class="col m-0 v-policeman"></p>
+                                            <p class="col m-0 v-date"></p>
+                                        </div>
+                                        <a class="stretched-link v-link"></a>
+                                    </li>
+                                </ul>
                             </div>
-                        </div>
-                        <div class="col-12">
-                            <a class="btn btn-outline-primary stretched-link" asp-controller="Police" asp-action="Criminal">Ещё</a>
+                            <div id="violation-not-found" class="col-12 row justify-content-center">
+                                <div class="col-12">
+                                    <h5 class="text-center">Not Found</h5>
+                                </div>
+                                <div class="mb-3 col-6">
+                                    <img class="img-fluid" src="~/image/Police/not-found-img.jpg" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <a class="btn btn-outline-primary stretched-link" asp-controller="Police" asp-action="Criminal">Ещё</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                <div class="mb-3 col-12 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="mb-4">Просмотреть мои дела</h5>
+                            <p class="card-text mb-2">Все ваши текущие и решенные дела о преступлениях</p>
+                            <a class="btn stretched-link btn-outline-info" asp-controller="Police" asp-action="Criminal" asp-route-id="-1">Просмотреть</a>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>

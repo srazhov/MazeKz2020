@@ -8,10 +8,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebMaze.Controllers.CustomAttribute;
+using WebMaze.DbStuff.Model;
 using WebMaze.DbStuff.Model.Police;
+using WebMaze.DbStuff.Model.Police.Enums;
 using WebMaze.DbStuff.Repository;
 using WebMaze.Models.Account;
-using WebMaze.Models.PoliceCertificate;
 using WebMaze.Models.Police;
 using WebMaze.Models.Police.Violation;
 
@@ -23,29 +25,16 @@ namespace WebMaze.Controllers
         private readonly IMapper mapper;
         private readonly PolicemanRepository pmRepo;
         private readonly CitizenUserRepository cuRepo;
-        private readonly PoliceCertificateRepository certRepo;
+        private readonly ViolationRepository violationRepo;
 
         public PoliceController(IMapper mapper,
             PolicemanRepository pmRepo,
-            CitizenUserRepository cuRepo, PoliceCertificateRepository certRepo)
+            CitizenUserRepository cuRepo, ViolationRepository violationRepo)
         {
             this.mapper = mapper;
             this.pmRepo = pmRepo;
             this.cuRepo = cuRepo;
-            this.certRepo = certRepo;
-        }
-
-        [HttpPost]
-        public IActionResult RegisterPoliceman()
-        {
-            var userItem = cuRepo.GetUserByLogin(User.Identity.Name);
-            if (userItem == null || pmRepo.IsUserPoliceman(userItem, out _))
-            {
-                throw new NotImplementedException();
-            }
-
-            pmRepo.MakePolicemanFromUser(userItem);
-            return RedirectToAction("Account");
+            this.violationRepo = violationRepo;
         }
 
         [HttpPost]
@@ -53,6 +42,87 @@ namespace WebMaze.Controllers
         {
             await HttpContext.SignOutAsync(Startup.PoliceAuthMethod);
             return RedirectToAction("Index");
+        }
+
+        public IActionResult SignUp()
+        {
+            var user = cuRepo.GetUserByLogin(User.Identity.Name);
+            var item = mapper.Map<UserVerificationViewModel>(user);
+
+            if (pmRepo.IsUserPoliceman(user, out _))
+            {
+                item.Verified = true;
+            }
+
+            return View(item);
+        }
+
+        [HttpPost]
+        public IActionResult SignUp(UserVerificationViewModel model)
+        {
+            var user = cuRepo.GetUserByLogin(User.Identity.Name);
+
+            if (ValidateItems(user.BirthDate >= new DateTime(1930, 1, 1), model.BirthdateCapable))
+            {
+                user.BirthDate = model.Birthdate;
+            }
+
+            if (ValidateItems(user.Gender != Gender.NotChosen, model.Gender != Gender.NotChosen))
+            {
+                user.Gender = model.Gender;
+            }
+
+            if (ValidateItems(!string.IsNullOrEmpty(user.FirstName), !string.IsNullOrEmpty(model.FirstName)))
+            {
+                user.FirstName = model.FirstName;
+            }
+
+            if (ValidateItems(!string.IsNullOrEmpty(user.LastName), !string.IsNullOrEmpty(model.LastName)))
+            {
+                user.LastName = model.LastName;
+            }
+
+            cuRepo.Save(user);
+            pmRepo.MakePolicemanFromUser(user);
+
+            return RedirectToAction("VerifyUser");
+        }
+
+        [OnlyPoliceman(needsRankCheck: false)]
+        public IActionResult VerifyUser()
+        {
+            return View(PolicemanRank.NotVerified);
+        }
+
+        [HttpPost]
+        public IActionResult VerifyUser(PolicemanRank rank)
+        {
+            var policeman = pmRepo.GetPolicemanByLogin(User.Identity.Name);
+            switch (rank)
+            {
+                case PolicemanRank.NotVerified:
+                    return RedirectToAction("VerifyUser");
+                case PolicemanRank.Policeman:
+                    if (policeman.User.BirthDate <= DateTime.Today.AddYears(-18))
+                    {
+                        policeman.Rank = PolicemanRank.Policeman;
+                        pmRepo.Save(policeman);
+                    }
+                    else
+                    {
+                        return View(PolicemanRank.Policeman);
+                    }
+
+                    break;
+                case PolicemanRank.MorgueEmployee:
+                    // Аутентификация в аккаунт морга. Если данного пользователя там нет, 
+                    // то предложить пользователю перейти в сайт Морга, и зарегистрироваться там
+                    return View(PolicemanRank.MorgueEmployee);
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return RedirectToAction("Account");
         }
 
         public IActionResult Account()
@@ -65,73 +135,37 @@ namespace WebMaze.Controllers
 
             if (!pmRepo.IsUserPoliceman(userItem, out Policeman policeItem))
             {
-                userItem.AvatarUrl = ChangeNullPhotoToDefault(userItem.AvatarUrl);
                 return View(new PolicemanViewModel { ProfileVM = mapper.Map<ProfileViewModel>(userItem) });
             }
 
             var result = mapper.Map<PolicemanViewModel>(policeItem);
-            result.ProfileVM.AvatarUrl = ChangeNullPhotoToDefault(result.ProfileVM.AvatarUrl);
-
-            if (certRepo.HasValidCertificate(User.Identity.Name, "Police", out var certificate))
-            {
-                result.Validity = certificate.Validity;
-                result.DateOfIssue = certificate.DateOfIssue;
-            }
-
             return View(result);
         }
 
-        public IActionResult SignUp()
-        {
-            return View();
-        }
-
-        public IActionResult Certificate()
-        {
-            var user = cuRepo.GetUserByLogin(User.Identity.Name);
-            if (!pmRepo.IsUserPoliceman(user, out _))
-            {
-                pmRepo.MakePolicemanFromUser(user);
-            }
-
-            var addmonths = 1;
-            var item = new PoliceCertificateViewModel()
-            {
-                Speciality = "Police",
-                Expires = DateTime.Today.AddMonths(addmonths),
-                RedirectToController = "Police",
-                RedirectToAction = "Account",
-                Price = 10
-            };
-
-            if (certRepo.HasValidCertificate(User.Identity.Name, "Police", out var certificate))
-            {
-                if (certificate.Validity == null)
-                {
-                    return RedirectToAction("Account");
-                }
-
-                item.Starts = certificate.Validity.GetValueOrDefault();
-                if (item.Expires != null)
-                {
-                    item.Expires = item.Starts.AddMonths(addmonths);
-                }
-            }
-
-            return RedirectToAction("Index", "PoliceCertificate", item);
-        }
-
         [Route("[controller]/[action]/{id?}")]
-        public IActionResult Criminal(int? id)
+        [OnlyPoliceman]
+        public IActionResult Criminal(long? id)
         {
-            if (id == null)
+            if (id == -1)
             {
-                return View();
+                return View(true);
             }
 
-            return RedirectToAction("Account");
+            var violation = violationRepo.Get(id.GetValueOrDefault());
+            if (violation == null)
+            {
+                return View(false);
+            }
+
+            var item = mapper.Map<CriminalItemViewModel>(violation);
+            item.PolicemanCanTakeThisViolation =
+                violation.BlamingUser?.Login != User.Identity.Name
+                && violation.BlamedUser?.Login != User.Identity.Name;
+            
+            return View("CriminalItem", item);
         }
 
+        [OnlyPoliceman(needsRankCheck: false)]
         public IActionResult AddViolation()
         {
             var user = cuRepo.GetUserByLogin(User.Identity.Name);
@@ -225,15 +259,15 @@ namespace WebMaze.Controllers
             var id = new ClaimsIdentity(claims, Startup.PoliceAuthMethod);
             await HttpContext.SignInAsync(Startup.PoliceAuthMethod, new ClaimsPrincipal(id));
         }
-        private static string ChangeNullPhotoToDefault(string urlPathString)
+        private bool ValidateItems(bool userHasValue, bool modelHasValue)
         {
-            const string defaultUserLogoPath = "/image/Police/police_default_user_logo.png";
-            if (string.IsNullOrEmpty(urlPathString))
+            if (userHasValue || !modelHasValue)
             {
-                urlPathString = defaultUserLogoPath;
+                RedirectToAction("SignUp");
+                return false;
             }
 
-            return urlPathString;
+            return true;
         }
     }
 }

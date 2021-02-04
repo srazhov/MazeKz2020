@@ -3,10 +3,6 @@
     var dateStart = new DateTime(2020, 1, 1).ToString("yyyy-MM-dd");
     var dateToday = DateTime.Today.ToString("yyyy-MM-dd");
 }
-@section Scripts
-{
-    <script src="~/js/Police.js"></script>
-}
 
 <form id="searchViolation" method="post" class="prevent-enter" asp-controller="Violation" asp-action="GetSearchItems">
     <div class="form-group row mb-3">
@@ -15,15 +11,29 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="form-group row mb-md-0">
-                <label class="col-auto">Сортировка: </label>
+                <label class="col-4">Сортировка: </label>
                 <div class="col-8">
                     <select name="order" class="form-control">
                         <option value="Latest" selected>Сначала последние</option>
                         <option value="Earliest">Сначала ранние</option>
                         <option value="ABCUser">По алфавитному порядку Гр.</option>
                         <option value="ABCPolice">По алфавитному порядку Пол.</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group row">
+                <label class="col-4">Показать:</label>
+                <div class="col-8">
+                    <select name="showStatus" class="form-control">
+                        <option value="All" selected>Показать все</option>
+                        <option value="NotStarted">Не просмотренные</option>
+                        <option value="Started">Рассматривающиеся</option>
+                        <option value="Denied">Отказанные</option>
+                        <option value="Accepted">Принятые</option>
                     </select>
                 </div>
             </div>
@@ -50,26 +60,31 @@
 <table class="table table-striped table-hover">
     <thead>
         <tr class="d-flex">
-            <th class="col-md-4">Гражданин</th>
-            <th class="col-md-4">Полицейский</th>
-            <th class="col-md-2 col-4">Дата</th>
+            <th class="col-md-3">Гражданин</th>
+            <th class="col-md-3">Полицейский</th>
+            <th class="col-md-2 col-3">Дата</th>
+            <th class="col-md-2 col-3">Статус</th>
             <th class="col-md-2 d-none d-md-block"></th>
         </tr>
     </thead>
-    <tbody class="violations-list-container">
-        <tr class="d-flex violation-list-item violation-clickable">
-            <td class="col-md-4 violation-user-field"></td>
-            <td class="col-md-4 violation-policeman-field"></td>
-            <td class="col-md-2 col-4 violation-date-field"></td>
-            <td class="col-md-2 d-none d-md-block">
-                <a class="violation-link">Перейти</a>
+    <tbody class="violation-container">
+        <tr class="d-flex violation-item clickable">
+            <td class="col-md-3 v-user"></td>
+            <td class="col-md-3 v-policeman"></td>
+            <td class="col-md-2 col-3 v-date"></td>
+            <td class="col-md-2 col-3 v-status"></td>
+            <td class="col-md-2 d-none d-md-block text-right">
+                <a class="v-link">Перейти</a>
             </td>
         </tr>
     </tbody>
 </table>
-<div class="violation-not-found row justify-content-center" style="display: none;">
+<div id="violation-not-found" class="row justify-content-center">
     <div class="col-3">
         <h2 class="text-center">Not Found</h2>
         <img class="img-fluid" src="~/image/Police/not-found-img.jpg" />
+    </div>
+    <div class="col-12 text-center">
+        <p class="text-muted">Ничего не найдено.<br>Попробуйте изменить критерии поиска</p>
     </div>
 </div>

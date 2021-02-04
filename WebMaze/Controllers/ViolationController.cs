@@ -1,50 +1,41 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using WebMaze.DbStuff.Model.Police;
+using WebMaze.DbStuff.Model.Police.Enums;
 using WebMaze.DbStuff.Repository;
 using WebMaze.Models.Police.Violation;
 
 namespace WebMaze.Controllers
 {
+    [Authorize(AuthenticationSchemes = Startup.PoliceAuthMethod)]
     [Route("api/[controller]")]
     [ApiController]
     public class ViolationController : ControllerBase
     {
         private readonly IMapper mapper;
         private readonly ViolationRepository violationRepo;
-        private readonly ViolationDeclarationRepository declaredViolationRepo;
+        private readonly PolicemanRepository policeRepository;
         private readonly CitizenUserRepository userRepo;
 
         public ViolationController(
             IMapper mapper,
             ViolationRepository violationRepo,
             CitizenUserRepository userRepo,
-            ViolationDeclarationRepository declaredViolationRepo)
+            PolicemanRepository policeRepository)
         {
             this.mapper = mapper;
             this.violationRepo = violationRepo;
             this.userRepo = userRepo;
-            this.declaredViolationRepo = declaredViolationRepo;
+            this.policeRepository = policeRepository;
         }
 
-        [HttpGet]
-        public IEnumerable<ViolationItemViewModel> Get()
+        [HttpGet("{max?}")]
+        public IEnumerable<ViolationItemViewModel> Get(int max = 10)
         {
-            return mapper.Map<ViolationItemViewModel[]>(violationRepo.GetAll());
-        }
-
-        [HttpGet("{id}")]
-        public ActionResult<ViolationItemViewModel> Get(long id)
-        {
-            var item = violationRepo.Get(id);
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            return mapper.Map<ViolationItemViewModel>(item);
+            return mapper.Map<ViolationItemViewModel[]>(violationRepo.GetAll(max));
         }
 
         [HttpGet("SearchUsers/{word}")]
@@ -62,7 +53,7 @@ namespace WebMaze.Controllers
         public ActionResult<ViolationSearchItems> GetSearchItems(ViolationSearchItems searchItem)
         {
             var item = violationRepo.GetByGivenSettings(searchItem.SearchWord, searchItem.DateFrom,
-                searchItem.DateTo, searchItem.Order, out int foundCount, searchItem.CurrentPage);
+                searchItem.DateTo, searchItem.Order, searchItem.ShowStatus, out int foundCount, searchItem.CurrentPage);
 
             searchItem.Violations = mapper.Map<ViolationItemViewModel[]>(item);
             searchItem.FoundCount = foundCount;
@@ -71,21 +62,111 @@ namespace WebMaze.Controllers
             return searchItem;
         }
 
-        [HttpPost]
-        public ActionResult<ViolationDeclarationViewModel> Post(ViolationDeclarationViewModel item)
+        [HttpPost("Declaration")]
+        public ActionResult<ViolationDeclarationViewModel> AddViolationDeclaration(ViolationDeclarationViewModel item)
         {
             if (item == null)
             {
                 return BadRequest();
             }
 
-            var violationDecl = mapper.Map<ViolationDeclaration>(item);
-            if (!declaredViolationRepo.AddViolationDeclaration(item.UserLogin, item.BlamedUserLogin, violationDecl))
+            var violationDecl = mapper.Map<Violation>(item);
+            if (!violationRepo.AddViolation(violationDecl, item.UserLogin, item.BlamedUserLogin))
             {
                 return BadRequest(item);
             }
 
+            item.RedirectLink = Url.Action("Account", "Police");
             return Ok(item);
+        }
+
+        [HttpPost("TakeViolationCase")]
+        public ActionResult TakeViolationCase(ConfirmTakeViolationViewModel model)
+        {
+            var item = violationRepo.Get(model.Id);
+            var policeman = policeRepository.GetPolicemanByLogin(model.PolicemanLogin);
+            if (item == null ||
+                (model.TakeViolation && item.ViewingPoliceman != null) ||
+                (!model.TakeViolation && item.ViewingPoliceman != policeman))
+            {
+                return BadRequest();
+            }
+
+            if (item.BlamedUser.Login == model.PolicemanLogin || item.BlamingUser.Login == model.PolicemanLogin)
+            {
+                return BadRequest();
+            }
+
+            if (model.TakeViolation)
+            {
+                item.ViewingPoliceman = policeman;
+                item.Status = CurrentStatus.Started;
+            }
+            else
+            {
+                item.ViewingPoliceman = null;
+                item.Status = CurrentStatus.NotStarted;
+            }
+
+            violationRepo.Save(item);
+
+            return Ok();
+        }
+
+        [HttpPost("MakeDecision")]
+        public ActionResult MakeDecision(CriminalItemViewModel model)
+        {
+            var violation = violationRepo.Get(model.Id);
+            if (violation == null || violation.ViewingPoliceman == null || violation.Status != CurrentStatus.Started)
+            {
+                return BadRequest();
+            }
+
+            violation.OffenseType = model.OffenseType;
+            violation.Status = CurrentStatus.Accepted;
+            violation.PolicemanCommentary = model.PolicemanCommentary;
+            violation.ConfirmDate = DateTime.Today;
+
+            if (model.OffenseType == TypeOfOffense.Administrative)
+            {
+                if (model.Penalty == null)
+                {
+                    return BadRequest();
+                }
+
+                violation.Penalty = model.Penalty;
+                violation.TermOfPunishment = null;
+            }
+            else
+            {
+                if (model.TermOfPunishment == null)
+                {
+                    return BadRequest();
+                }
+
+                violation.TermOfPunishment = model.TermOfPunishment;
+                violation.Penalty = null;
+            }
+
+            violationRepo.Save(violation);
+            return Ok();
+        }
+
+        [HttpPost("DenyViolation")]
+        public ActionResult DenyViolation(ConfirmTakeViolationViewModel model)
+        {
+            var violation = violationRepo.Get(model.Id);
+            if(violation == null || violation.Status != CurrentStatus.Started)
+            {
+                return BadRequest();
+            }
+
+            violation.Status = CurrentStatus.Denied;
+            violation.PolicemanCommentary = model.PolicemanCommentary;
+            violation.ConfirmDate = DateTime.Today;
+            violationRepo.Save(violation);
+
+            return Ok();
         }
     }
 }

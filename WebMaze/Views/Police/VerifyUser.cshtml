@@ -1,0 +1,80 @@
+﻿@using WebMaze.DbStuff.Model.Police.Enums
+@model PolicemanRank
+@{
+    Layout = "_PoliceLayout.cshtml";
+    ViewBag.Title = "Выбор специализации";
+}
+
+<div class="row justify-content-center text-center">
+    <div class="col-auto mb-4">
+        <h2>Выбор специализации</h2>
+        <p class="lead">
+            Всегда была тяга расследовать преступления, хватать преступников, и просто быть хорошим человеком в глазах общественности?
+            Тогда профессия полицейского - ваше призвание! Быстро и не выходя из дома подайте заявку на становление полицейским.
+        </p>
+        <p><small class="text-muted">*Став полицейским, вы не избежите наказания за совершенные преступления</small></p>
+    </div>
+    @if (Model != PolicemanRank.NotVerified)
+    {
+        <div class="col-auto mb-4">
+            @if (Model == PolicemanRank.Policeman)
+            {
+                <p class="lead text-danger">
+                    Внимание, чтобы стать полицейским, необходимо, чтобы вам было как минимум 18 лет.
+                    Возвращайтесь, когда подрастете
+                </p>
+            }
+            else
+            {
+                <p class="lead text-danger">
+                    Внимание, мы не нашли ваши данные на сайте Морга. <a href="#">Чтобы продолжить, вам надо зарегистрироваться на их сайте</a>
+                </p>
+            }
+        </div>
+    }
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm border-primary">
+            <div class="card-header">
+                <h4>Полицейский</h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Став полицейским, вы получите следующие возможности:
+                </p>
+                <ul class="list-unstyled mb-3">
+                    <li>Просмотр преступлении</li>
+                    <li>Исполнение судебных обязательств</li>
+                    <li>Блокировка аккаунта нарушителей</li>
+                    <li>&#43; Много чего другого</li>
+                </ul>
+                <ul class="list-group mt-0 mb-3">
+                    <li class="list-group-item text-danger">Нужно быть старше 18 лет</li>
+                    <li class="list-group-item text-danger">Нужно подтвердить аккаунт в Градоуправлении</li>
+                </ul>
+                <form method="post" asp-controller="Police" asp-action="VerifyUser">
+                    <button type="submit" name="rank" value="Policeman" class="w-100 btn btn-lg btn-outline-primary">Стать полицейским</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm border-danger">
+            <div class="card-header">
+                <h4>Патологоанатом</h4>
+            </div>
+            <div class="card-body">
+                <div class="card-subtitle mb-2 text-muted">*Необходимо для патологоанатомов*</div>
+                <p class="card-text">
+                    Для патологоанатомов необходимо присутствие полицейского при вскрытии.
+                    Поэтому чтобы упростить вызов полицейского, и получить приоритет, вам стоит верифицировать аккаунт Морга в Полиции
+                </p>
+                <ul class="list-group mt-0 mb-3">
+                    <li class="list-group-item text-danger">Должен быть аккаунт в Морге города</li>
+                </ul>
+                <form method="post" asp-controller="Police" asp-action="VerifyUser">
+                    <button type="submit" name="rank" value="MorgueEmployee" class="w-100 btn btn-lg btn-outline-primary">Подтвердить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

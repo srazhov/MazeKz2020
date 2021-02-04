@@ -1,0 +1,158 @@
+﻿@using WebMaze.DbStuff.Model.Police.Enums
+@model WebMaze.Models.Police.Violation.CriminalItemViewModel
+@{
+    Layout = "_PoliceLayout";
+    ViewBag.Title = "Нарушение пользователя";
+    var offenseName = Model.OffenseType == TypeOfOffense.Administrative ? "Административное" : "Уголовное";
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            const data = {};
+            data.status = "@Model.Status";
+            ViolationInstructionsToExtractData($('#violation'), data);
+        });
+    </script>
+}
+
+<h2 class="mb-3 text-center">Преступление No.@Model.Id</h2>
+<hr class="mb-2" />
+
+<div class="row">
+    <div class="col-md-3">
+        <div style="position: sticky; top: 60px;">
+            <img class="img-fluid mb-2" src="@Model.BlamedUserAvatar">
+            <p class="text-center">Фото обвиняемого</p>
+            <hr />
+            <div class="row" id="violation">
+                <label class="col-4">Статус:</label>
+                <p class="col-8 v-status"></p>
+                @if (Model.Status != CurrentStatus.NotStarted)
+                {
+                    <label class="col-4">Делом занимается:</label>
+                    <p class="col-8">@Model.ViewingPolicemanName</p>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="offset-md-1 col-md-8">
+        <div class="row">
+            <label class="col-6 col-md-4">Обвиняемый:</label>
+            <p class="col-6 form-control">@Model.BlamedUserName</p>
+        </div>
+        <div class="row">
+            <label class="col-6 col-md-4">Обвинитель:</label>
+            <p class="col-6 form-control">@Model.BlamingUserName</p>
+        </div>
+        <div class="row">
+            <label class="col-6 col-md-4">Дата:</label>
+            <p class="col-6 form-control">@Model.Date.ToString("dd MMMM yyyy")</p>
+        </div>
+        <div class="row">
+            <label class="col-6 col-md-4">Тип правонарушения:</label>
+            <p class="col-6 form-control">@offenseName</p>
+        </div>
+        <div class="row mb-3">
+            <label class="col-12 col-md-4">Заявление от обвинителя:</label>
+            <textarea class="col-12 col-md-6 form-control" rows="5" disabled>@Model.Explanation</textarea>
+        </div>
+        <hr />
+
+        @if (Model.Status == CurrentStatus.NotStarted && Model.PolicemanCanTakeThisViolation)
+        {
+            <button id="ConfirmTakeViolation" type="submit" data-login="@User.Identity.Name"
+                    data-value="@Model.Id" data-confirm="true" class="btn btn-danger">
+                Взяться за это дело
+            </button>
+        }
+        else if (Model.Status == CurrentStatus.Started && Model.PolicemanLogin == User.Identity.Name)
+        {
+            <div class="mb-3">
+                <h2 class="mb-0">Приговор полицейского @Model.ViewingPolicemanName</h2>
+                <span>По делу No.@Model.Id</span>
+            </div>
+            <form id="MakeViolationDecision" method="post" asp-controller="Violation" asp-action="MakeDecision"
+                  class="needs-validation prevent-enter" novalidate>
+                <input type="hidden" name="Id" value="@Model.Id" />
+                <div class="form-group row">
+                    <div class="col-6 col-md-4">
+                        <label class="mb-0" for="OffenseType">Тип Правонарушения:</label>
+                        <small class="form-text text-muted">Можно изменить*</small>
+                    </div>
+                    <select id="changeOffenseType" class="col-6 form-control-off" asp-for="OffenseType">
+                        <option value="Administrative">Административное</option>
+                        <option value="Criminal">Уголовное</option>
+                    </select>
+                </div>
+                <div id="criminalCase" class="form-group row">
+                    <label for="TermOfPunishment" class="col-6 col-md-4">Уголовный срок до:</label>
+                    <input name="TermOfPunishment" class="col-6 form-control-off" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                </div>
+                <div id="administrativeCase" class="form-group row">
+                    <label for="Penalty" class="my-0 col-6 col-md-4">Административный штраф в размере:</label>
+                    <input name="Penalty" class="col-6 form-control" type="number" min="1" step="any" required />
+                    <small class="my-0 offset-6 offset-md-4 col-6 invalid-feedback">Укажите сумму штрафа</small>
+                </div>
+                <div class="form-group row">
+                    <label for="PolicemanCommentary" class="col-12 col-md-4">Ваши комментарии:</label>
+                    <textarea name="PolicemanCommentary" class="col-12 col-md-6 form-control" rows="5" placeholder="Что способствовало вашему решению"></textarea>
+                </div>
+                <div class="form-check mb-3">
+                    <input id="agreeWithConsequences" class="form-check-input" type="checkbox" value="false" required />
+                    <label for="agreeWithConsequences" class="form-check-label">Я согласен принять ответственность в случае ответного обвинения</label>
+                    <small class="invalid-feedback">Вы должны принять условие</small>
+                </div>
+                <div class="ml-1 row">
+                    <button type="submit" class="mr-3 mt-1 btn btn-danger">Вынести приговор</button>
+                    <button id="DenyViolationButton" type="button" class="btn btn-outline-secondary mr-3 mt-1">Отказать от рассмотрения</button>
+                    <button id="ConfirmTakeViolation" type="button" data-login="@User.Identity.Name"
+                            data-value="@Model.Id" data-confirm="false" class="btn btn-outline-dark mt-1">
+                        Отказаться от дела
+                    </button>
+                </div>
+            </form>
+        }
+        else if (Model.Status == CurrentStatus.Accepted)
+        {
+            <div class="mb-3">
+                <h3>Суд принял решение</h3>
+                @if (Model.OffenseType == TypeOfOffense.Administrative)
+                {
+                    <p class="lead">
+                        Назначить наказание пользователю @Model.BlamedUserName в виде Административного штрафа в размере @Model.Penalty?.ToString("0.00")$
+                        до месяца после назначения приговора. В противном случае пользователь @Model.BlamedUserName попадет под Уголовный Кодекс No.420
+                        за неисполнение требовании суда.
+                    </p>
+                }
+                else
+                {
+                    <p class="lead">
+                        Назначить наказание пользователю @Model.BlamedUserName в виде Уголовного Срока до
+                        @Model.TermOfPunishment?.ToString("dd MMMM yyyy").
+                    </p>
+                }
+                @if (!string.IsNullOrEmpty(Model.PolicemanCommentary))
+                {
+                    <h4 class="text-black-50">Комментарии от судьи:</h4>
+                    <p class="lead border-top border-bottom">@Model.PolicemanCommentary</p>
+                }
+                <p class="lead">Пользователь может оспорить решение суда, если он напишет заявление с просьбой пересмотреть дело No.@Model.Id</p>
+                <span class="lead text-info">Решение принял(-а) @Model.ViewingPolicemanName в @Model.ConfirmDate?.ToString("dd MMMM yyyy") г.</span>
+            </div>
+        }
+        else if (Model.Status == CurrentStatus.Denied)
+        {
+            <div class="mb-3">
+                <h3 class="text-danger">Суд отказал в рассмотрении</h3>
+                <p class="lead">Обвинитель может попытаться написать новое заявление и предоставить новые доказательства</p>
+                @if (!string.IsNullOrEmpty(Model.PolicemanCommentary))
+                {
+                    <h4 class="text-black-50">Комментарии от судьи:</h4>
+                    <p class="lead border-top border-bottom">@Model.PolicemanCommentary</p>
+                }
+                <span class="lead text-info">Решение принял(-а) @Model.ViewingPolicemanName в @Model.ConfirmDate?.ToString("dd MMMM yyyy") г.</span>
+            </div>
+        }
+    </div>
+</div>

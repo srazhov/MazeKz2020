@@ -1,64 +1,127 @@
 ﻿@using WebMaze.Models.Police
-@model PolicemanViewModel
+@using WebMaze.DbStuff.Model;
+@model UserVerificationViewModel
 @{
     Layout = "_PoliceLayout.cshtml";
-    ViewBag.Title = "Как стать полицейским";
+    ViewBag.Title = "Верификация аккаунта";
+    var currentDate = DateTime.Today;
+    var genderName = Model.Gender == Gender.Male ? "Мужской" : "Женский";
 }
 
-@section Scripts {
-    <script src="~/js/Police.js"></script>
+<h2 class="display-4">Верификация аккаунта</h2>
+<h3 class="mb-3">Уже известные нам данные:</h3>
+<div class="row mb-2">
+    <div class="col-md-3">Логин:</div>
+    <div class="col-md-5 form-control">@User.Identity.Name</div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.FirstName))
+{
+    <div class="row mb-2">
+        <div class="col-md-3">Имя:</div>
+        <div class="col-md-5 form-control">@Model.FirstName</div>
+    </div>
+}
+@if (!string.IsNullOrEmpty(Model.LastName))
+{
+    <div class="row mb-2">
+        <div class="col-md-3">Фамилия:</div>
+        <div class="col-md-5 form-control">@Model.LastName</div>
+    </div>
+}
+@if (Model.Gender != Gender.NotChosen)
+{
+    <div class="row mb-2">
+        <div class="col-md-3">Пол:</div>
+        <div class="col-md-5 form-control">@genderName</div>
+    </div>
+}
+@if (Model.BirthdateCapable)
+{
+    <div class="row mb-2">
+        <div class="col-md-3">Дата рождения:</div>
+        <div class="col-md-5 form-control">@Model.Birthdate.ToString("dd.MM.yyyy")</div>
+    </div>
+}
+<div class="row mb-4">
+    <p class="col-3">Статус:</p>
+    <div class="col-5">
+        @if (Model.Verified)
+        {
+            <p class="lead text-success mb-0">Все в порядке</p>
+            <span>Это значит, что все ваши данные действительны</span>
+        }
+        else
+        {
+            <p class="lead text-danger mb-0">Нужно уточнение</p>
+            <span><a href="#verifyUser">Нам не хватает некоторых данных. Вам надо подтвердить эти данные</a></span>
+        }
+    </div>
+</div>
+
+
+@if (!Model.Verified)
+{
+    <hr />
+    <h3 class="mb-3">Подтверждение данных</h3>
+    <form id="verifyUser" method="post" class="needs-validation" asp-controller="Police" asp-action="SignUp" novalidate>
+        @if (string.IsNullOrEmpty(Model.FirstName))
+        {
+            <div class="form-group row">
+                <label class="col-md-3" for="firstName">Имя:</label>
+                <div class="col-md-5">
+                    <input class="form-control" name="firstName" required />
+                    <span class="invalid-feedback">Введите имя</span>
+                </div>
+            </div>
+        }
+        @if (string.IsNullOrEmpty(Model.LastName))
+        {
+            <div class="form-group row">
+                <label class="col-md-3" for="lastName">Фамилия:</label>
+                <div class="col-md-5">
+                    <input class="form-control" name="lastName" required />
+                    <span class="invalid-feedback">Введите фамилию</span>
+                </div>
+            </div>
+        }
+        @if (Model.Gender == Gender.NotChosen)
+        {
+            <div class="form-group row">
+                <label class="col-md-3" for="Gender">Пол:</label>
+                <div class="col-md-5">
+                    <select class="form-control" name="Gender" required>
+                        <option value="@Gender.NotChosen" disabled selected hidden>Выбрать пол</option>
+                        <option value="@Gender.Male">Мужчина</option>
+                        <option value="@Gender.Female">Женщина</option>
+                    </select>
+                </div>
+            </div>
+        }
+        @if (!Model.BirthdateCapable)
+        {
+            <div class="form-group row">
+                <label class="col-md-3" for="birthdate">Дата рождения:</label>
+                <div class="col-md-5">
+                    <input class="form-control-off" name="birthdate" type="date" value="@currentDate.ToString("yyyy-MM-dd")" />
+                    <span class="text-danger">
+                        <small>Внимание, чтобы получить доступ к службам, необходимо, чтобы вам было как минимум 18 лет</small>
+                    </span>
+                </div>
+            </div>
+        }
+        <div class="row">
+            <button class="btn btn-primary" type="submit">Подтвердить</button>
+        </div>
+    </form>
+}
+else
+{
+
 }
 
-<div class="mx-auto px-3 py-3 pt-md-5 text-center">
-    <h1 class="display-4">Как стать служителем закона</h1>
-    <p class="lead">
-        Сегодня мир настолько безопасный, что вам не нужно быть каким то особенным, чтобы стать полицейским. <br />
-        Нужны лишь ваши деньги и желание
-    </p>
-</div>
-
-<div class="row text-center justify-content-center mt-3 mb-3">
-    <div class="col-md-6 col-lg-4">
-        <div class="card border-success mb-4 shadow-sm">
-            <div class="card-header">
-                <h4 class="text-success">Начальный</h4>
-            </div>
-            <div class="card-body">
-                <div class="text-muted card-subtitle">Всего за</div>
-                <h1 class="card-title">
-                    10$
-                    <small class="text-muted">/ в месяц</small>
-                </h1>
-                <p class="card-text mt-3">Вы получите возможность:</p>
-                <ul class="list-group list-group-flush mb-4">
-                    <li class="list-group-item">Арестовывать и блокировать аккаунты любого пользователя</li>
-                    <li class="list-group-item">Выписывать административный штраф</li>
-                    <li class="list-group-item">Просматривать список нарушителей</li>
-                </ul>
-                <a asp-controller="Police" asp-action="Certificate" asp-route-id="1" class="w-100 stretched-link btn btn-outline-primary">Получить</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 col-lg-4">
-        <div class="card border-info mb-4 shadow-sm">
-            <div class="card-header">
-                <h4 class="text-info">В разработке</h4>
-            </div>
-            <div class="card-body">
-                <h1 class="card-title mt-3">
-                    Это еще не все!
-                </h1>
-                <p class="card-text mt-3 mb-4">
-                    В будущем вы получите куда больше возможностей чем когда-либо, поэтому оставайтесь на связи, чтобы не пропустить информацию о новых пакетах
-                </p>
-                <hr />
-                <button type="button" class="w-100 btn btn-outline-primary">
-                    Подписаться
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 <hr />
-
-
+<h3>Зачем нужна верификация?</h3>
+<div class="row">
+    <p class="col-md-8 lead">Верификация нужна, чтобы вся информация, попадаемая в базу данных полиции, соответствовала всем требованиям МВД нашей страны.</p>
+</div>

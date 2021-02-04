@@ -3,13 +3,8 @@
     Layout = "_PoliceLayout";
 }
 
-@section Scripts
-{
-    <script src="~/js/Police.js"></script>
-}
-
 <h2 class="mb-3">Сообщение о нарушении</h2>
-<form id="add-violation" method="post" class="prevent-enter" novalidate asp-controller="Violation" asp-action="Post">
+<form id="add-violation" method="post" class="prevent-enter" novalidate asp-controller="Violation" asp-action="AddViolationDeclaration">
     <input name="date" type="hidden" value="@Model.Date.ToString("yyyy-MM-dd")" required />
     <input name="blamedUserLogin" type="hidden" required />
     <input name="userLogin" type="hidden" required value="@Model.UserLogin" />
