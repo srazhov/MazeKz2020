@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebMaze.Controllers.CustomAttribute;
+using WebMaze.DbStuff.Model;
 using WebMaze.DbStuff.Model.Police;
 using WebMaze.DbStuff.Model.Police.Enums;
 using WebMaze.DbStuff.Repository;
@@ -48,11 +49,6 @@ namespace WebMaze.Controllers
             var user = cuRepo.GetUserByLogin(User.Identity.Name);
             var item = mapper.Map<UserVerificationViewModel>(user);
 
-            if (Enum.TryParse<Gender>(user.Gender, out var resultGender))
-            {
-                item.Sex = resultGender;
-            }
-
             if (pmRepo.IsUserPoliceman(user, out _))
             {
                 item.Verified = true;
@@ -71,9 +67,9 @@ namespace WebMaze.Controllers
                 user.BirthDate = model.Birthdate;
             }
 
-            if (ValidateItems(!string.IsNullOrEmpty(user.Gender), model.Sex != Gender.NotChosen))
+            if (ValidateItems(user.Gender != Gender.NotChosen, model.Gender != Gender.NotChosen))
             {
-                user.Gender = model.Sex.ToString();
+                user.Gender = model.Gender;
             }
 
             if (ValidateItems(!string.IsNullOrEmpty(user.FirstName), !string.IsNullOrEmpty(model.FirstName)))

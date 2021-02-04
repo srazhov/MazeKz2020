@@ -91,7 +91,7 @@
                 </div>
                 <div id="administrativeCase" class="form-group row">
                     <label for="Penalty" class="my-0 col-6 col-md-4">Административный штраф в размере:</label>
-                    <input name="Penalty" class="col-6 form-control" type="number" required />
+                    <input name="Penalty" class="col-6 form-control" type="number" min="1" step="any" required />
                     <small class="my-0 offset-6 offset-md-4 col-6 invalid-feedback">Укажите сумму штрафа</small>
                 </div>
                 <div class="form-group row">
@@ -120,15 +120,15 @@
                 @if (Model.OffenseType == TypeOfOffense.Administrative)
                 {
                     <p class="lead">
-                        Назначить наказание пользователю @Model.BlamingUserName в виде Административного штрафа в размере @Model.Penalty?.ToString("0.00")$
-                        до месяца после назначения приговора. В противном случае пользователь @Model.BlamingUserName попадет под Уголовный Кодекс No.420
+                        Назначить наказание пользователю @Model.BlamedUserName в виде Административного штрафа в размере @Model.Penalty?.ToString("0.00")$
+                        до месяца после назначения приговора. В противном случае пользователь @Model.BlamedUserName попадет под Уголовный Кодекс No.420
                         за неисполнение требовании суда.
                     </p>
                 }
                 else
                 {
                     <p class="lead">
-                        Назначить наказание пользователю @Model.BlamingUserName в виде Уголовного Срока до
+                        Назначить наказание пользователю @Model.BlamedUserName в виде Уголовного Срока до
                         @Model.TermOfPunishment?.ToString("dd MMMM yyyy").
                     </p>
                 }

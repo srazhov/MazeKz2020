@@ -63,6 +63,7 @@ namespace WebMaze.DbStuff.Model
 
     public enum Gender
     {
+        NotChosen,
         Male,
         Female
     };

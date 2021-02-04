@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using WebMaze.DbStuff.Model;
 
 namespace WebMaze.Models.Police
 {
@@ -11,19 +12,12 @@ namespace WebMaze.Models.Police
         
         public DateTime Birthdate { get; set; }
 
-        public Gender Sex { get; set; } = Gender.NotChosen;
+        public Gender Gender { get; set; } = Gender.NotChosen;
 
         public bool Verified { get; set; } = false;
 
         public bool BirthdateCapable { get => Birthdate >= new DateTime(1930, 1, 1); }
 
         public bool IsOldEnough { get => Birthdate <= DateTime.Today.AddYears(-18); }
-    }
-
-    public enum Gender
-    {
-        NotChosen,
-        Male,
-        Female
     }
 }

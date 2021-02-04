@@ -1,10 +1,11 @@
 ﻿@using WebMaze.Models.Police
+@using WebMaze.DbStuff.Model;
 @model UserVerificationViewModel
 @{
     Layout = "_PoliceLayout.cshtml";
     ViewBag.Title = "Верификация аккаунта";
     var currentDate = DateTime.Today;
-    var genderName = Model.Sex == Gender.Male ? "Мужской" : "Женский";
+    var genderName = Model.Gender == Gender.Male ? "Мужской" : "Женский";
 }
 
 <h2 class="display-4">Верификация аккаунта</h2>
@@ -28,7 +29,7 @@
         <div class="col-md-5 form-control">@Model.LastName</div>
     </div>
 }
-@if (Model.Sex != Gender.NotChosen)
+@if (Model.Gender != Gender.NotChosen)
 {
     <div class="row mb-2">
         <div class="col-md-3">Пол:</div>
@@ -84,12 +85,12 @@
                 </div>
             </div>
         }
-        @if (Model.Sex == Gender.NotChosen)
+        @if (Model.Gender == Gender.NotChosen)
         {
             <div class="form-group row">
-                <label class="col-md-3" for="sex">Пол:</label>
+                <label class="col-md-3" for="Gender">Пол:</label>
                 <div class="col-md-5">
-                    <select class="form-control" name="sex" required>
+                    <select class="form-control" name="Gender" required>
                         <option value="@Gender.NotChosen" disabled selected hidden>Выбрать пол</option>
                         <option value="@Gender.Male">Мужчина</option>
                         <option value="@Gender.Female">Женщина</option>
