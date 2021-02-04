@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -86,8 +87,7 @@ namespace WebMaze.Controllers
                 return BadRequest(errorMessages);
             }
 
-            if (citizenUser.Certificates.Any(c =>
-                c.Name == certificateViewModel.Name && c.Status == CertificateStatus.Valid))
+            if (citizenUser.Certificates.Any(c => string.Equals(c.Name, certificateViewModel.Name, StringComparison.OrdinalIgnoreCase) && c.Status == CertificateStatus.Valid))
             {
                 var errorMessages = new List<string>()
                     {$"The citizen {certificateViewModel.OwnerLogin} already has a valid certificate."};
@@ -134,7 +134,8 @@ namespace WebMaze.Controllers
             }
 
             var validCertificate = citizenUser.Certificates.SingleOrDefault(c =>
-                c.Name == certificateViewModel.Name && c.Status == CertificateStatus.Valid) ?? new Certificate();
+                string.Equals(c.Name, certificateViewModel.Name, StringComparison.OrdinalIgnoreCase) &&
+                c.Status == CertificateStatus.Valid) ?? new Certificate();
             
             // Check if the valid certificate is not the input certificate.
             if (validCertificate.Id != 0 && validCertificate.Id != certificateViewModel.Id)

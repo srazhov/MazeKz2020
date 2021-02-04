@@ -16,7 +16,7 @@ namespace WebMaze.Filters
             if (!filterContext.ModelState.IsValid)
             {
                 // Export only if we are redirecting to action.
-                if (filterContext.Result is RedirectToActionResult)
+                if (filterContext.Result is RedirectResult)
                 {
                     var errorMessages = filterContext.ModelState.Values.SelectMany(modelStateEntry => modelStateEntry.Errors.Select(b => b.ErrorMessage)).ToArray();
                     controller.TempData["ModelStateErrors"] = errorMessages;

@@ -33,6 +33,8 @@ using WebMaze.DbStuff.Repository.MedicineRepo;
 using WebMaze.Models.Roles;
 using WebMaze.Models.Police.Violation;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authorization;
+using WebMaze.Infrastructure;
 using WebMaze.Models.HDDoctor;
 using WebMaze.Models.HDManager;
 
@@ -78,13 +80,26 @@ namespace WebMaze
                     config.AccessDeniedPath = "/HealthDepartment/AccessDenied";
                 });
 
+            services.AddTransient<IAuthorizationHandler, RestrictAccessToBlockedUsersHandler>(s =>
+                new RestrictAccessToBlockedUsersHandler(s.GetService<CitizenUserRepository>()));
+
+            services.AddTransient<IAuthorizationHandler, RestrictAccessToDeadUsersHandler>(s =>
+                new RestrictAccessToDeadUsersHandler(s.GetService<CitizenUserRepository>()));
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admins", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole("Admin");
+                    policy.Requirements.Add(new RestrictAccessToBlockedUsersRequirement());
+                    policy.Requirements.Add(new RestrictAccessToDeadUsersRequirement());
+                });
+            });
+
             RegistrationMapper(services);
 
             RegistrationRepository(services);
-
-            services.AddScoped(s => new UserValidator(
-                s.GetService<CitizenUserRepository>(),
-                requiredPasswordLength: 3));
 
             services.AddScoped(s => new UserService(s.GetService<CitizenUserRepository>(),
                 s.GetService<RoleRepository>(),
@@ -94,6 +109,7 @@ namespace WebMaze
 
             services.AddControllersWithViews().AddJsonOptions(opt =>
             {
+                opt.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                 opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
@@ -192,6 +208,12 @@ namespace WebMaze
             configurationExpression.CreateMap<MedicineCertificate, MedicineCertificateViewModel>();
             configurationExpression.CreateMap<MedicineCertificateViewModel, MedicineCertificate>();
 
+            configurationExpression.CreateMap<ReceptionOfPatients, ReceptionOfPatientsViewModel>();
+            configurationExpression.CreateMap<ReceptionOfPatientsViewModel, ReceptionOfPatients>();
+
+            configurationExpression.CreateMap<ReceptionOfPatients, UserPageViewModel>();
+            configurationExpression.CreateMap<UserPageViewModel, ReceptionOfPatients>();
+
             var mapperConfiguration = new MapperConfiguration(configurationExpression);
             var mapper = new Mapper(mapperConfiguration);
             services.AddScoped<IMapper>(s => mapper);
@@ -226,6 +248,7 @@ namespace WebMaze
 
             services.AddScoped(s => new MedicalInsuranceRepository(s.GetService<WebMazeContext>()));
             services.AddScoped(s => new MedicineCertificateRepository(s.GetService<WebMazeContext>()));
+            services.AddScoped(s => new ReceptionOfPatientsRepository(s.GetService<WebMazeContext>()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -56,6 +56,11 @@ namespace WebMaze.Services
             return citizenUserRepository.GetUserByLogin(login);
         }
 
+        public bool UserExists(string login)
+        {
+            return citizenUserRepository.UserExists(login);
+        }
+
         public virtual void Save(CitizenUser user)
         {
             citizenUserRepository.Save(user);
@@ -149,6 +154,11 @@ namespace WebMaze.Services
             user.Roles.Remove(role);
             citizenUserRepository.Save(user);
             return OperationResult.Success();
+        }
+
+        public virtual List<CitizenUser> GetBlockedUsers()
+        {
+            return citizenUserRepository.GetBlockedUsers().ToList();
         }
     }
 }

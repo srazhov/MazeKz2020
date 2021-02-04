@@ -14,6 +14,8 @@ namespace WebMaze.DbStuff.Model.Medicine
 
         public virtual string PhoneNumber { get; set; }
 
-        public virtual CitizenUser CitizenId { get; set; }
+        public virtual DateTime DateTime { get; set; }
+
+        public virtual CitizenUser Citizen { get; set; }
     }
 }
