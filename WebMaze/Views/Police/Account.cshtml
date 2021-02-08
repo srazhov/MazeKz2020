@@ -3,20 +3,20 @@
 @model PolicemanViewModel
 @{
     Layout = "_PoliceLayout";
-    ViewBag.Title = $"{Model.ProfileVM.Login}";
+    ViewBag.Title = $"{Model.Login}";
 }
 
-<h2 class="mb-4">Тестовый личный кабинет пользователя @Model.ProfileVM.Login</h2>
+<h2 class="mb-4">Тестовый личный кабинет пользователя @Model.Login</h2>
 
 <div class="row justify-content-center justify-content-md-start">
     <div class="mb-4 col-6 col-md-3 order-md-last">
         <div class="card">
             <div class="card-img">
-                <img src="@Model.ProfileVM.AvatarUrl" class="rounded img-fluid" />
+                <img src="@Model.AvatarUrl" class="rounded img-fluid" />
                 <hr />
             </div>
             <div class="card-body text-center">
-                <h5 class="card-title mb-1">@Model.ProfileVM.Login</h5>
+                <h5 class="card-title mb-1">@Model.Login</h5>
                 <p class="mb-3 card-text text-success">@Model.RankString</p>
                 <a class="mt-0 mb-2 btn btn-outline-info w-100" asp-controller="Police" asp-action="SignUp">Мои данные</a>
                 <a class="mt-0 btn btn-outline-warning w-100" asp-controller="Police" asp-action="VerifyUser">Сменить специализацию</a>

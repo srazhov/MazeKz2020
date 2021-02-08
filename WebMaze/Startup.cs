@@ -165,7 +165,10 @@ namespace WebMaze
             configurationExpression.CreateMap<CertificateViewModel, Certificate>();
 
             configurationExpression.CreateMap<Policeman, PolicemanViewModel>()
-                .ForMember(dest => dest.ProfileVM, opt => opt.MapFrom(p => p.User));
+                .ForMember(dest => dest.Login, opt => opt.MapFrom(p => p.User.Login))
+                .ForMember(dest => dest.AvatarUrl, opt => opt.MapFrom(p => p.User.AvatarUrl));
+
+            configurationExpression.CreateMap<CitizenUser, PolicemanViewModel>();
 
             configurationExpression.CreateMap<Violation, ViolationItemViewModel>()
                 .ForMember(dest => dest.BlamedUserName, opt => opt.MapFrom(v => v.BlamedUser.FirstName + " " + v.BlamedUser.LastName))

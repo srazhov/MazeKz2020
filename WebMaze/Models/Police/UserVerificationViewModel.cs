@@ -17,7 +17,5 @@ namespace WebMaze.Models.Police
         public bool Verified { get; set; } = false;
 
         public bool BirthdateCapable { get => Birthdate >= new DateTime(1930, 1, 1); }
-
-        public bool IsOldEnough { get => Birthdate <= DateTime.Today.AddYears(-18); }
     }
 }

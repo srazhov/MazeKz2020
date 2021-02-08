@@ -19,6 +19,11 @@ namespace WebMaze.DbStuff.Repository
 
         public bool AddViolation(Violation item, string blamingUserLogin, string blamedUserLogin)
         {
+            if (blamedUserLogin == blamingUserLogin)
+            {
+                return false;
+            }
+
             item.BlamingUser = context.CitizenUser.SingleOrDefault(u => u.Login == blamingUserLogin);
             item.BlamedUser = context.CitizenUser.SingleOrDefault(u => u.Login == blamedUserLogin);
             if (item.BlamingUser == null || item.BlamedUser == null)
@@ -40,7 +45,7 @@ namespace WebMaze.DbStuff.Repository
                          where (dateFrom == null || v.Date >= dateFrom) && (dateTo == null || v.Date <= dateTo)
                          select v;
 
-            if(Enum.TryParse(neededStatus, out CurrentStatus curStatus))
+            if (Enum.TryParse(neededStatus, out CurrentStatus curStatus))
             {
                 result = result.Where(v => v.Status == curStatus);
             }

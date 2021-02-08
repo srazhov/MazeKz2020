@@ -1,12 +1,20 @@
 ﻿@using WebMaze.Services
 @inject UserService userService
 
+@{ 
+    var title = "WebMaze";
+    if(ViewBag.Title != null)
+    {
+        title = ViewBag.Title + " | WebMaze";
+    }
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebMaze</title>
+    <title>@title</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/saginbekSite.css" />
     <link rel="stylesheet" href="~/css/site.css?t=@DateTime.Now.Ticks" />

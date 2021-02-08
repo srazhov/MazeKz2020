@@ -188,6 +188,8 @@ $(document).ready(function () {
 
     $('#MakeViolationDecision').submit(function (event) {
         if ($(this)[0].checkValidity() === true) {
+            event.preventDefault();
+
             const data = {
                 Id: Number($(this).find('input[name="Id"]').val()),
                 OffenseType: $(this).find('input[name="OffenseType"]').val(),

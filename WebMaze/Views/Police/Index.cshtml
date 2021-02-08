@@ -1,5 +1,4 @@
-﻿@model WebMaze.Models.Police.MainIndexInfoViewModel
-@{
+﻿@{
     Layout = "_PoliceLayout";
     ViewBag.Title = "Полиция города";
 }
@@ -17,18 +16,25 @@
     </div>
 </div>
 
-@foreach (var card in Model.Cards)
-{
-    <div class="row mb-2">
-        <div class="col-md-12">
-            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm position-relative">
-                <div class="col p-4 d-flex flex-column position-static">
-                    <strong class="d-inline-block mb-2 text-primary">@card.SubTitle</strong>
-                    <h3 class="mb-1">@card.Title</h3>
-                    <p class="card-text mb-auto">@card.Description</p>
-                    <a class="stretched-link" href="@card.Link">@card.LinkText</a>
-                </div>
+<div class="row mb-2">
+    <div class="col-md-6">
+        <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm position-relative">
+            <div class="col p-4 d-flex flex-column position-static">
+                <strong class="d-inline-block mb-2 text-primary">Внутри системы</strong>
+                <h3 class="mb-1">Стать полицейским</h3>
+                <p class="card-text mb-auto">Заполните о себе информацию, и смело становитесь защитником прав человека</p>
+                <a class="stretched-link" asp-controller="Police" asp-action="VerifyUser">Перейти</a>
             </div>
         </div>
     </div>
-}
+    <div class="col-md-6">
+        <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm position-relative">
+            <div class="col p-4 d-flex flex-column position-static">
+                <strong class="d-inline-block mb-2 text-primary">Справки</strong>
+                <h3 class="mb-1">Моя информация</h3>
+                <p class="card-text mb-auto">Посмотрите, есть ли у вас судимости, как обстоят дела с вашими заявлениями, и узнайте про имеющиеся штрафы</p>
+                <a class="stretched-link" asp-controller="Police" asp-action="Account">Перейти</a>
+            </div>
+        </div>
+    </div>
+</div>

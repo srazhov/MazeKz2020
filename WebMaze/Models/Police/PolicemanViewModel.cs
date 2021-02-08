@@ -6,7 +6,12 @@ namespace WebMaze.Models.Police
 {
     public class PolicemanViewModel
     {
-        public ProfileViewModel ProfileVM { get; set; }
+        public const string DefaultUserPic = "/image/Police/police_default_user_logo.png";
+        private string avatar;
+
+        public string Login { get; set; }
+
+        public string AvatarUrl { get { return avatar ?? DefaultUserPic; } set { avatar = value; } }
 
         public PolicemanRank? Rank { get; set; } = null;
 
