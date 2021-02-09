@@ -59,6 +59,8 @@ namespace WebMaze.DbStuff.Model
         public virtual List<RecordForm> RecordForms { get; set; }
         public virtual MedicineCertificate MedicineCertificate { get; set; }
         public virtual List<ReceptionOfPatients> DoctorsAppointments { get; set; }
+
+        public virtual List<PoliceNotification> PoliceNotifications { get; set; }
     }
 
     public enum Gender

@@ -179,6 +179,8 @@ namespace WebMaze
             configurationExpression.CreateMap<CitizenUser, FoundUsersViewModel>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(u => u.FirstName + " " + u.LastName));
 
+            configurationExpression.CreateMap<PoliceNotification, NotificationsViewModel>();
+
             configurationExpression.CreateMap<CitizenUser, UserVerificationViewModel>();
 
             configurationExpression.CreateMap<Violation, CriminalItemViewModel>()
@@ -234,6 +236,7 @@ namespace WebMaze
 
             services.AddScoped(s => new PolicemanRepository(s.GetService<WebMazeContext>()));
             services.AddScoped(s => new ViolationRepository(s.GetService<WebMazeContext>()));
+            services.AddScoped(s => new PoliceNotificationsRepository(s.GetService<WebMazeContext>()));
 
             services.AddScoped(s => new HealthDepartmentRepository(s.GetService<WebMazeContext>()));
 

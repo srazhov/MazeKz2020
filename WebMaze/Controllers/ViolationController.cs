@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using WebMaze.DbStuff.Model.Police;
 using WebMaze.DbStuff.Model.Police.Enums;
 using WebMaze.DbStuff.Repository;
+using WebMaze.Infrastructure;
 using WebMaze.Models.Police.Violation;
 
 namespace WebMaze.Controllers
@@ -19,17 +20,20 @@ namespace WebMaze.Controllers
         private readonly ViolationRepository violationRepo;
         private readonly PolicemanRepository policeRepository;
         private readonly CitizenUserRepository userRepo;
+        private readonly PoliceNotificationsRepository notificationsRepository;
 
         public ViolationController(
             IMapper mapper,
             ViolationRepository violationRepo,
             CitizenUserRepository userRepo,
-            PolicemanRepository policeRepository)
+            PolicemanRepository policeRepository,
+            PoliceNotificationsRepository notificationsRepository)
         {
             this.mapper = mapper;
             this.violationRepo = violationRepo;
             this.userRepo = userRepo;
             this.policeRepository = policeRepository;
+            this.notificationsRepository = notificationsRepository;
         }
 
         [HttpGet("{max?}")]
@@ -97,18 +101,22 @@ namespace WebMaze.Controllers
                 return BadRequest();
             }
 
+            PoliceNotification notification;
             if (model.TakeViolation)
             {
                 item.ViewingPoliceman = policeman;
                 item.Status = CurrentStatus.Started;
+                notification = PoliceNotificationsFactory.OfficerTookViolation(item.BlamingUser);
             }
             else
             {
                 item.ViewingPoliceman = null;
                 item.Status = CurrentStatus.NotStarted;
+                notification = PoliceNotificationsFactory.OfficerDeniedFromViolation(item.BlamingUser);
             }
 
             violationRepo.Save(item);
+            notificationsRepository.Save(notification);
 
             return Ok();
         }
@@ -149,6 +157,9 @@ namespace WebMaze.Controllers
             }
 
             violationRepo.Save(violation);
+
+            var notifications = PoliceNotificationsFactory.AcceptedViolation(violation.BlamedUser, violation.BlamingUser);
+            notificationsRepository.SaveRange(notifications);
             return Ok();
         }
 
@@ -156,7 +167,7 @@ namespace WebMaze.Controllers
         public ActionResult DenyViolation(ConfirmTakeViolationViewModel model)
         {
             var violation = violationRepo.Get(model.Id);
-            if(violation == null || violation.Status != CurrentStatus.Started)
+            if (violation == null || violation.Status != CurrentStatus.Started)
             {
                 return BadRequest();
             }
@@ -165,6 +176,9 @@ namespace WebMaze.Controllers
             violation.PolicemanCommentary = model.PolicemanCommentary;
             violation.ConfirmDate = DateTime.Today;
             violationRepo.Save(violation);
+
+            var notifications = PoliceNotificationsFactory.DenyViolation(violation.BlamedUser, violation.BlamingUser);
+            notificationsRepository.SaveRange(notifications);
 
             return Ok();
         }

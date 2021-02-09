@@ -213,6 +213,10 @@ $(document).ready(function () {
             });
         }
     });
+
+    $('#notificationsDD').click(function () { UpdateNotifications($(this)); });
+
+    $('.notification-container').click(function (e) { e.stopPropagation() });
 });
 
 function SerializeForm(form) {
@@ -274,6 +278,37 @@ function ViolationInstructionsToExtractData(clone, data) {
             clone.find('.v-status').text('Принято').addClass('text-success');
             break;
     }
+}
+
+function ExtractNotificationsData(clone, data) {
+    clone.find('.n-title').text(data.title);
+    clone.find('.n-message').text(data.message);
+    clone.find('.n-link').attr('href', '/Police/notification/' + data.id);
+    clone.find('.n-date').text(new Date(data.date).toLocaleDateString());
+
+    clone.find('.n-remove-btn').toggleClass('n-remove-btn n-temp-btn');
+    $('.n-temp-btn').toggleClass('n-temp-btn').click(function () {
+        $.ajax({
+            type: 'POST',
+            url: '/api/PoliceNotifications/wasread',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(data.id),
+            success: function () {
+                UpdateNotifications($('.notification-container'));
+            }
+        });
+    });
+}
+
+function UpdateNotifications(item) {
+    const login = item.attr('data-login');
+
+    $.get('/api/PoliceNotifications/' + login, function (data) {
+        AddDataItem(data, 'notification', ExtractNotificationsData);
+    });
 }
 
 function OnChangeoffenseType(e) {

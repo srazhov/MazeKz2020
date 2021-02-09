@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebMaze.DbStuff.Model.Police;
 using WebMaze.DbStuff.Model.Police.Enums;
+using WebMaze.Infrastructure;
 using WebMaze.Models.Police.Violation;
 
 namespace WebMaze.DbStuff.Repository
@@ -32,7 +33,12 @@ namespace WebMaze.DbStuff.Repository
             }
 
             item.Status = CurrentStatus.NotStarted;
-            Save(item);
+            dbSet.Add(item);
+
+            var notifications = PoliceNotificationsFactory.AddViolation(item.BlamedUser, item.BlamingUser);
+            context.AddRange(notifications);
+
+            context.SaveChanges();
             return true;
         }
 

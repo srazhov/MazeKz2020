@@ -26,18 +26,42 @@
             <ul class="navbar-nav ml-auto">
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
+                    <li class="nav-item dropdown d-none d-md-block">
+                        <a class="nav-link" href="#" id="notificationsDD" role="button" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false" data-login="@User.Identity.Name">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" class="bi bi-bell" viewBox="0 0 16 16">
                                 <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z" />
                             </svg>
                         </a>
+                        <div class="notification-container dropdown-menu dropdown-menu-right" aria-labelledby="notificationsDD">
+                            <h6 class="dropdown-header text-center notification-header">Уведомления</h6>
+                            <div class="dropdown-divider"></div>
+                            <div id="notification-not-found">Нет новых уведомлении</div>
+                            <div class="notification-item notification-row" style="display: none;">
+                                <a class="n-link">
+                                    <div class="notification-item-content">
+                                        <div class="row">
+                                            <div class="n-title col-auto"></div>
+                                            <span class="n-date col-auto">Тест</span>
+                                        </div>
+                                        <div class="n-message"></div>
+                                    </div>
+                                </a>
+                                <div class="notification-remove n-remove-btn notification-tooltip" aria-label="Прочитано">
+                                    <svg viewBox="0 0 10 10">
+                                        <line x1="1" y1="1" x2="9" y2="9"></line>
+                                        <line x1="1" y1="9" x2="9" y2="1"></line>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
                     </li>
-                    <li class="nav-item active dropdown">
+                    <li class="nav-item d-md-none"><a class="nav-link">Уведомления</a></li>
+                    <li class="nav-item active">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropDown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             @User.Identity.Name
                         </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropDown">
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropDown">
                             <a class="dropdown-item" asp-controller="Police" asp-action="Account">Личный кабинет</a>
                             <div class="dropdown-divider"></div>
                             <div class="dropdown-item">
