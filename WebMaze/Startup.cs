@@ -62,8 +62,7 @@ namespace WebMaze
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=WebMazeKz;Trusted_Connection=True;MultipleActiveResultSets=true;";
-            // var connectionString = "Data Source=SQL5102.site4now.net;Initial Catalog=DB_A6F624_WebMaze;User Id=DB_A6F624_WebMaze_admin;Password=2747896d";
-
+            
             services.AddDbContext<WebMazeContext>(option => option.UseSqlServer(connectionString));
 
             services.AddAuthentication(AuthMethod)
