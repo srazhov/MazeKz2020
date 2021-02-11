@@ -13,6 +13,7 @@ using WebMaze.DbStuff.Model.Medicine;
 using WebMaze.DbStuff.Repository;
 using WebMaze.DbStuff.Repository.MedicineRepo;
 using WebMaze.DbStuff.Repository.MedicineRepository;
+using WebMaze.Infrastructure.Enums;
 using WebMaze.Models.Account;
 using WebMaze.Models.Department;
 using WebMaze.Models.HealthDepartment;

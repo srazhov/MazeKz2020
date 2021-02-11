@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using WebMaze.DbStuff.Model;
+using WebMaze.Infrastructure.Enums;
 
 namespace WebMaze.Models.Police
 {

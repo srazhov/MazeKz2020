@@ -1,0 +1,106 @@
+﻿@model WebMaze.Models.Users.ProfileViewModel
+
+@{
+    Layout = "_LayoutUserAccount";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-5">
+            <div class="card text-center mb-3">
+                <div class="card-body">
+                    <img src="@Model.AvatarUrl" class="img-fluid" alt="Profile picture">
+                    @if (Model.Friendship == null || Model.Friendship.FriendshipStatus == FriendshipStatus.Declined)
+                    {
+                        <form asp-controller="Friends" asp-action="SendFriendRequest" method="post">
+                            <input type="hidden" name="userLogin" value="@Model.Login" />
+                            <button type="submit" class="btn btn-success btn-sm btn-block my-2">Send friend request</button>
+                        </form>
+                    }
+                    else
+                    {
+                        @switch (Model.Friendship.FriendshipStatus)
+                        {
+                            case FriendshipStatus.Pending:
+                                <form asp-controller="Friends" asp-action="CancelFriendRequest" method="post">
+                                    <input type="hidden" name="userLogin" value="@Model.Friendship.Id" />
+                                    <button type="submit" class="btn btn-danger btn-sm btn-block my-2">Cancel friend request</button>
+                                </form>
+                                break;
+                            case FriendshipStatus.Accepted:
+                                <a asp-action="Message" asp-route-id="@Model.Id" class="btn btn-primary btn-sm btn-block my-2">Message</a>
+                                <form asp-controller="Friends" asp-action="Unfriend" method="post">
+                                    <input type="hidden" name="userLogin" value="@Model.Login" />
+                                    <button type="submit" class="btn btn-danger btn-sm btn-block">Unfriend</button>
+                                </form>
+                                break;
+                        }
+                    }
+                </div>
+            </div>
+            <div class="card text-center mb-3">
+                <div class="card-body">
+                    <strong>Friends:</strong>
+                    <div class="d-flex flex-wrap align-items-center">
+                        @foreach (var friend in Model.Friends)
+                        {
+                            <div class="col-sm-4 p-2">
+                                <div class="mb-2">
+                                    <a class="mb-2" asp-controller="Users" asp-action="Profile" asp-route-userLogin="@friend.Login"><strong>@friend.FirstName</strong></a>
+                                </div>
+                                <img src="@friend.AvatarUrl" class="rounded-circle mx-auto d-block" height="75" width="75" alt="Profile picture">
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-7">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card text-left mb-3">
+                        <div class="card-body">
+                            <div class="container">
+                                <div class="row no-gutters">
+                                    <h2>@Model.FirstName @Model.LastName</h2>
+                                </div>
+                                <hr />
+                                <div class="row no-gutters">
+                                    <div class="col">
+                                        <p>Birth date: @Model.BirthDate</p>
+                                        <p>Gender: @Model.Gender</p>
+                                        <p>Marital status: @(Model.IsMarried ? "Married" : "Single") </p>
+                                    </div>
+                                    <div class="col">
+                                        <p>Registration date: @Model.RegistrationDate</p>
+                                        <p>Email: @Model.Email</p>
+                                        <p>Phone number: @Model.PhoneNumber</p>
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="row no-gutters">
+                                    <strong>Addresses:</strong>
+                                    @foreach (var adresses in Model.Adresses)
+                                    {
+                                        <div>
+                                            City: @adresses.City Street: @adresses.Street House number: @adresses.HouseNumber
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card text-left mb-3">
+                        <div class="card-body">
+                            <strong>@Model.Login's Certificates:</strong>
+                            @foreach (var certificate in Model.Certificates)
+                            {
+                                <div>@certificate.Name</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

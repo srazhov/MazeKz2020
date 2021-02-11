@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using WebMaze.DbStuff.Model;
 using WebMaze.DbStuff.Model.UserAccount;
 using WebMaze.DbStuff.Repository;
+using WebMaze.Infrastructure.Enums;
 
 namespace WebMaze.DbStuff
 {
@@ -42,6 +43,7 @@ namespace WebMaze.DbStuff
                 {
                     Login = "Tsoi",
                     Password = "123",
+                    AvatarUrl = "/image/avatar/tsoi.jpg",
                     Balance = 300000,
                     RegistrationDate = new DateTime(2020, 10, 28),
                     LastLoginDate = new DateTime(2020, 10, 28),
@@ -53,7 +55,7 @@ namespace WebMaze.DbStuff
                     BirthDate = new DateTime(1977, 4, 2)
                 }
             };
-            AddIfNotExistUsersWithRole(doctors, "Doctor");
+            AddIfNotExistUsersWithRole(doctors, roleName: "Doctor");
         }
 
         private void AddPolicemen()
@@ -64,6 +66,7 @@ namespace WebMaze.DbStuff
                 {
                     Login = "Chuck",
                     Password = "123",
+                    AvatarUrl = "/image/avatar/chuck.jpg",
                     Balance = 6000000,
                     RegistrationDate = new DateTime(2020, 12, 30),
                     LastLoginDate = new DateTime(2020, 12, 30),
@@ -86,6 +89,7 @@ namespace WebMaze.DbStuff
                 {
                     Login = "Ivan",
                     Password = "123",
+                    AvatarUrl = "/image/avatar/ivan.jpg",
                     Balance = 1000,
                     RegistrationDate = new DateTime(2021, 1, 12),
                     LastLoginDate = new DateTime(2021, 1, 12),
@@ -100,6 +104,7 @@ namespace WebMaze.DbStuff
                 {
                     Login = "Anastasia",
                     Password = "123",
+                    AvatarUrl = "/image/avatar/anastasia.jpg",
                     Balance = 30000,
                     RegistrationDate = new DateTime(2021, 1, 15),
                     LastLoginDate = new DateTime(2021, 1, 15),
@@ -114,20 +119,22 @@ namespace WebMaze.DbStuff
                 {
                     Login = "Arnold",
                     Password = "123",
-                    Balance = 0,
+                    AvatarUrl = "/image/avatar/arnold.png",
+                    Balance = 9000000,
                     RegistrationDate = new DateTime(2021, 1, 16),
                     LastLoginDate = new DateTime(2021, 1, 16),
                     FirstName = "Arnold",
-                    LastName = "Goldenberg",
+                    LastName = "Schwarzenegger",
                     Gender = Gender.Male,
-                    Email = "ArnoldGoldenberg@example.com",
+                    Email = "ArnoldSchwarzenegger@example.com",
                     PhoneNumber = "77777777",
-                    BirthDate = new DateTime(1977, 5, 10)
+                    BirthDate = new DateTime(1947, 7, 30)
                 },
                 new CitizenUser
                 {
                     Login = "Aigerim",
                     Password = "123",
+                    AvatarUrl = "/image/avatar/aigerim.jpg",
                     Balance = 8000,
                     RegistrationDate = new DateTime(2021, 1, 17),
                     LastLoginDate = new DateTime(2021, 1, 17),
@@ -142,6 +149,7 @@ namespace WebMaze.DbStuff
                 {
                     Login = "Dias",
                     Password = "123",
+                    AvatarUrl = "/image/avatar/dias.png",
                     Balance = 15000,
                     RegistrationDate = new DateTime(2021, 1, 19),
                     LastLoginDate = new DateTime(2021, 1, 19),

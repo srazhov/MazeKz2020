@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebMaze.DbStuff;
 
 namespace WebMaze.Migrations
 {
     [DbContext(typeof(WebMazeContext))]
-    partial class WebMazeContextModelSnapshot : ModelSnapshot
+    [Migration("20210205102928_AddMessage")]
+    partial class AddMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -511,37 +513,6 @@ namespace WebMaze.Migrations
                     b.ToTable("Certificates");
                 });
 
-            modelBuilder.Entity("WebMaze.DbStuff.Model.UserAccount.Friendship", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .UseIdentityColumn();
-
-                    b.Property<DateTime?>("AcceptanceDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("FriendshipStatus")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("RequestDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long>("RequestedId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("RequesterId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RequestedId");
-
-                    b.HasIndex("RequesterId");
-
-                    b.ToTable("Friendships");
-                });
-
             modelBuilder.Entity("WebMaze.DbStuff.Model.UserAccount.Message", b =>
                 {
                     b.Property<long>("Id")
@@ -756,25 +727,6 @@ namespace WebMaze.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("WebMaze.DbStuff.Model.UserAccount.Friendship", b =>
-                {
-                    b.HasOne("WebMaze.DbStuff.Model.CitizenUser", "Requested")
-                        .WithMany("ReceivedFriendRequests")
-                        .HasForeignKey("RequestedId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("WebMaze.DbStuff.Model.CitizenUser", "Requester")
-                        .WithMany("SentFriendRequests")
-                        .HasForeignKey("RequesterId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Requested");
-
-                    b.Navigation("Requester");
-                });
-
             modelBuilder.Entity("WebMaze.DbStuff.Model.UserAccount.Message", b =>
                 {
                     b.HasOne("WebMaze.DbStuff.Model.CitizenUser", "Recipient")
@@ -831,15 +783,11 @@ namespace WebMaze.Migrations
 
                     b.Navigation("MedicineCertificate");
 
-                    b.Navigation("ReceivedFriendRequests");
-
                     b.Navigation("ReceivedMessages");
 
                     b.Navigation("ReceivedTransactions");
 
                     b.Navigation("RecordForms");
-
-                    b.Navigation("SentFriendRequests");
 
                     b.Navigation("SentMessages");
 

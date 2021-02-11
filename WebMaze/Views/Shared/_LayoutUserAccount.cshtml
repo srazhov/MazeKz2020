@@ -8,9 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WebMaze</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/saginbekSite.css" />
-    <link rel="stylesheet" href="~/css/site.css?t=@DateTime.Now.Ticks" />
-    <link rel="stylesheet" href="~/css/HealthDepartment.css?t=@DateTime.Now.Ticks" />
+    <link rel="stylesheet" href="~/css/UserAccount.css?t=@DateTime.Now.Ticks" />
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     @RenderSection("Scripts", required: false)
@@ -53,17 +51,46 @@
                     </ul>
                 </div>
                 <ul class="nav navbar-nav navbar-right">
-                    <vc:balance-summary />
+                    <li>
+                        <vc:balance-summary />
+                    </li>
                 </ul>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
+    <div class="wrapper">
+        <nav id="sidebar" class="sidebar">
+            <div class="p-2">
+                <ul class="list-unstyled components mb-5">
+                    <li class="active">
+                        <a asp-controller="Account" asp-action="MyProfile">My profile</a>
+                    </li>
+                    <li>
+                        <a href="#">Messenger</a>
+                    </li>
+                    <li>
+                        <a asp-controller="Friends" asp-action="Index">Friends</a>
+                    </li>
+                    <li>
+                        <a asp-controller="UserTasks" asp-action="Index">Tasks</a>
+                    </li>
+                    <li>
+                        <a asp-controller="Certificates" asp-action="Index">Certificates</a>
+                    </li>
+                    <li>
+                        <a asp-controller="Transactions" asp-action="Index">Transactions</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="container">
+            <main role="main" class="row justify-content-center pb-3">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
     <footer class="border-top footer text-muted">
         <div class="container">
             Этот сайт сделал я сам

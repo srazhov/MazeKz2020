@@ -5,24 +5,34 @@
     <script src="~/js/login-validation.js"></script>
 }
 
-<div>
-    Страница логина
-
-    <form action="@Url.Action("Login", "Account")" method="post">
-        @Html.HiddenFor(x => x.ReturnUrl)
-        @Html.ValidationSummary(true)
-        <div>
-            @Html.DisplayNameFor(x => x.Login):
-            @Html.TextBoxFor(x => x.Login)
-            @Html.ValidationMessageFor(x => x.Login)
-        </div>
-        <div>
-            @Html.DisplayNameFor(x => x.Password):
-            @Html.TextBoxFor(x => x.Password, new { @type = "password" })
-            @Html.ValidationMessageFor(x => x.Password)
-        </div>
-        <div>
-            <input type="submit" value="Войти" />
-        </div>
-    </form>
+<h2 class="text-center">Log in</h2>
+<div class="row justify-content-center">
+    <div class="col-sm-4">
+        <section>
+            <form asp-action="Login" method="post">
+                <hr />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Login"></label>
+                    <input asp-for="Login" class="form-control" />
+                    <span asp-validation-for="Login" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password"></label>
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="IsPersistent">
+                        <input asp-for="IsPersistent" />
+                        Remember Me
+                    </label>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block my-2">Log in</button>
+                    <a asp-action="Registration" class="btn btn-secondary btn-block">Registration</a>
+                </div>
+            </form>
+        </section>
+    </div>
 </div>

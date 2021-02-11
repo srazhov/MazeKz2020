@@ -28,16 +28,18 @@ namespace WebMaze.Controllers
         private IWebHostEnvironment hostEnvironment;
         private IMapper mapper;
         private UserService userService;
+        private FriendshipService friendshipService;
 
-        public AccountController(CitizenUserRepository citizenUserRepository,
-            IMapper mapper,
-            IWebHostEnvironment hostEnvironment, AdressRepository adressRepository, UserService userService)
+        public AccountController(CitizenUserRepository citizenUserRepository, IMapper mapper,
+            IWebHostEnvironment hostEnvironment, AdressRepository adressRepository, UserService userService,
+            FriendshipService friendshipService)
         {
             this.citizenUserRepository = citizenUserRepository;
             this.mapper = mapper;
             this.hostEnvironment = hostEnvironment;
             this.adressRepository = adressRepository;
             this.userService = userService;
+            this.friendshipService = friendshipService;
         }
 
         [HttpGet]
@@ -83,7 +85,7 @@ namespace WebMaze.Controllers
 
             if (ModelState.IsValid)
             {
-                var operationResult = await userService.SignInAsync(loginViewModel.Login, loginViewModel.Password, isPersistent: false);
+                var operationResult = await userService.SignInAsync(loginViewModel.Login, loginViewModel.Password, loginViewModel.IsPersistent);
                 if (operationResult.Succeeded)
                 {
                     if (string.IsNullOrEmpty(loginViewModel.ReturnUrl))
@@ -130,10 +132,10 @@ namespace WebMaze.Controllers
         }
 
         [HttpGet]
-        public IActionResult Profile()
+        public IActionResult MyProfile()
         {
             var user = userService.GetCurrentUser();
-            var viewModel = mapper.Map<ProfileViewModel>(user);
+            var viewModel = mapper.Map<MyProfileViewModel>(user);
             return View(viewModel);
         }
 
@@ -144,7 +146,7 @@ namespace WebMaze.Controllers
         }
 
         [HttpPost]
-        public IActionResult Profile(ProfileViewModel profileViewModel)
+        public IActionResult MyProfile(MyProfileViewModel profileViewModel)
         {
             var citizen = mapper.Map<CitizenUser>(profileViewModel);
             citizenUserRepository.Save(citizen);
@@ -152,21 +154,21 @@ namespace WebMaze.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateAvatar(ProfileViewModel viewModel)
+        public async Task<IActionResult> UpdateAvatar(IFormFile avatar)
         {
-            var fileName = viewModel.Avatar.FileName;
+            var user = userService.GetCurrentUser();
+            var fileName = user.Login;
             var wwwrootPath = hostEnvironment.WebRootPath;
-            var path = @$"{wwwrootPath}\image\avatar\{fileName}";
+            var path = @$"{wwwrootPath}\image\avatar\{fileName}.jpg";
             using (var fileStream = new FileStream(path, FileMode.Create))
             {
-                await viewModel.Avatar.CopyToAsync(fileStream);
+                await avatar.CopyToAsync(fileStream);
             }
 
-            var citizen = citizenUserRepository.Get(viewModel.Id);
-            citizen.AvatarUrl = $"/image/avatar/{fileName}";
-            citizenUserRepository.Save(citizen);
+            user.AvatarUrl = $"/image/avatar/{fileName}.jpg";
+            userService.Save(user);
 
-            return RedirectToAction("Profile", new { id = viewModel.Id });
+            return RedirectToAction("MyProfile");
         }
     
         [HttpGet]
@@ -189,7 +191,7 @@ namespace WebMaze.Controllers
 
             adressRepository.Save(adress);
 
-            return RedirectToAction("Profile", new { id = adressViewModel.OwnerId });
+            return RedirectToAction("MyProfile", new { id = adressViewModel.OwnerId });
         }
     }
 }

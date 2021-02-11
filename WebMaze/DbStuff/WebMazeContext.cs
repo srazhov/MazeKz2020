@@ -39,6 +39,10 @@ namespace WebMaze.DbStuff
 
         public DbSet<Transaction> Transactions { get; set; }
 
+        public DbSet<Message> Messages { get; set; }
+
+        public DbSet<Friendship> Friendships { get; set; }
+
         public DbSet<MedicalInsurance> MedicalInsurances { get; set; }
         public DbSet<MedicineCertificate> MedicineCertificates { get; set; }
         public DbSet<ReceptionOfPatients> ReceptionOfPatients { get; set; }
@@ -90,7 +94,27 @@ namespace WebMaze.DbStuff
             modelBuilder.Entity<CitizenUser>()
                 .HasMany(citizenUser => citizenUser.ReceivedTransactions)
                 .WithOne(transaction => transaction.Recipient);
-            
+
+            modelBuilder.Entity<CitizenUser>()
+                .HasMany(citizenUser => citizenUser.SentMessages)
+                .WithOne(message => message.Sender)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CitizenUser>()
+                .HasMany(citizenUser => citizenUser.ReceivedMessages)
+                .WithOne(message => message.Recipient)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CitizenUser>()
+                .HasMany(citizenUser => citizenUser.SentFriendRequests)
+                .WithOne(friendship => friendship.Requester)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CitizenUser>()
+                .HasMany(citizenUser => citizenUser.ReceivedFriendRequests)
+                .WithOne(friendship => friendship.Requested)
+                .OnDelete(DeleteBehavior.Restrict);
+
             base.OnModelCreating(modelBuilder);
         }
     }

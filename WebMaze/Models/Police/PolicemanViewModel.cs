@@ -6,7 +6,7 @@ namespace WebMaze.Models.Police
 {
     public class PolicemanViewModel
     {
-        public ProfileViewModel ProfileVM { get; set; }
+        public MyProfileViewModel ProfileVM { get; set; }
 
         public PolicemanRank? Rank { get; set; } = null;
 

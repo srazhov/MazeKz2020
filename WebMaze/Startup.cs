@@ -35,9 +35,13 @@ using WebMaze.Models.Police.Violation;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using WebMaze.Infrastructure;
+using WebMaze.Infrastructure.Enums;
+using WebMaze.Models.Friends;
+using WebMaze.Models.Friendships;
 using WebMaze.Models.HDDoctor;
 using WebMaze.Models.HDManager;
 using WebMaze.Models.Transactions;
+using WebMaze.Models.Users;
 
 namespace WebMaze
 {
@@ -58,6 +62,8 @@ namespace WebMaze
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=WebMazeKz;Trusted_Connection=True;MultipleActiveResultSets=true;";
+            // var connectionString = "Data Source=SQL5102.site4now.net;Initial Catalog=DB_A6F624_WebMaze;User Id=DB_A6F624_WebMaze_admin;Password=2747896d";
+
             services.AddDbContext<WebMazeContext>(option => option.UseSqlServer(connectionString));
 
             services.AddAuthentication(AuthMethod)
@@ -109,6 +115,9 @@ namespace WebMaze
             services.AddScoped(s => new TransactionService(s.GetService<TransactionRepository>(),
                 s.GetService<CitizenUserRepository>()));
 
+            services.AddScoped(s => new FriendshipService(s.GetService<FriendshipRepository>(),
+                s.GetService<CitizenUserRepository>()));
+
             services.AddHttpContextAccessor();
 
             services.AddControllersWithViews().AddJsonOptions(opt =>
@@ -124,8 +133,19 @@ namespace WebMaze
         {
             var configurationExpression = new MapperConfigurationExpression();
 
+            configurationExpression.CreateMap<CitizenUser, MyProfileViewModel>().ForMember(dest => dest.FriendRequests,
+                opt => opt.MapFrom(src =>
+                    src.ReceivedFriendRequests.Where(friendship => friendship.FriendshipStatus == FriendshipStatus.Pending)));
+
+            configurationExpression.CreateMap<CitizenUser, FriendViewModel>();
+            configurationExpression.CreateMap<Friendship, FriendRequestViewModel>();
             configurationExpression.CreateMap<CitizenUser, ProfileViewModel>();
-            configurationExpression.CreateMap<ProfileViewModel, CitizenUser>();
+
+            configurationExpression.CreateMap<Friendship, FriendshipViewModel>()
+                .ForMember(dest => dest.RequesterLogin, opt => opt.MapFrom(src => src.Requester.Login))
+                .ForMember(dest => dest.RequestedLogin, opt => opt.MapFrom(src => src.Requested.Login));
+
+            configurationExpression.CreateMap<FriendshipViewModel, Friendship>();
 
             configurationExpression.CreateMap<CitizenUser, RegistrationViewModel>();
             configurationExpression.CreateMap<RegistrationViewModel, CitizenUser>();
@@ -256,6 +276,8 @@ namespace WebMaze
             services.AddScoped(s => new CertificateRepository(s.GetService<WebMazeContext>()));
             services.AddScoped(s => new RoleRepository(s.GetService<WebMazeContext>()));
             services.AddScoped(s => new TransactionRepository(s.GetService<WebMazeContext>()));
+            services.AddScoped(s => new MessageRepository(s.GetService<WebMazeContext>()));
+            services.AddScoped(s => new FriendshipRepository(s.GetService<WebMazeContext>()));
 
             services.AddScoped(s => new MedicalInsuranceRepository(s.GetService<WebMazeContext>()));
             services.AddScoped(s => new MedicineCertificateRepository(s.GetService<WebMazeContext>()));

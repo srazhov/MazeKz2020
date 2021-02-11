@@ -13,6 +13,7 @@ using WebMaze.DbStuff.Model;
 using WebMaze.DbStuff.Model.Police;
 using WebMaze.DbStuff.Model.Police.Enums;
 using WebMaze.DbStuff.Repository;
+using WebMaze.Infrastructure.Enums;
 using WebMaze.Models.Account;
 using WebMaze.Models.Police;
 using WebMaze.Models.Police.Violation;
@@ -135,7 +136,7 @@ namespace WebMaze.Controllers
 
             if (!pmRepo.IsUserPoliceman(userItem, out Policeman policeItem))
             {
-                return View(new PolicemanViewModel { ProfileVM = mapper.Map<ProfileViewModel>(userItem) });
+                return View(new PolicemanViewModel { ProfileVM = mapper.Map<MyProfileViewModel>(userItem) });
             }
 
             var result = mapper.Map<PolicemanViewModel>(policeItem);

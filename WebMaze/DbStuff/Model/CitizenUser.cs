@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using WebMaze.DbStuff.Model.Medicine;
 using WebMaze.DbStuff.Model.Police;
 using WebMaze.DbStuff.Model.UserAccount;
+using WebMaze.Infrastructure.Enums;
 
 namespace WebMaze.DbStuff.Model
 {
@@ -59,16 +60,33 @@ namespace WebMaze.DbStuff.Model
 
         public virtual List<Transaction> ReceivedTransactions { get; set; } = new List<Transaction>();
 
+        public virtual List<Message> SentMessages { get; set; } = new List<Message>();
+
+        public virtual List<Message> ReceivedMessages { get; set; } = new List<Message>();
+        
+        public virtual List<Friendship> SentFriendRequests { get; set; } = new List<Friendship>();
+
+        public virtual List<Friendship> ReceivedFriendRequests { get; set; } = new List<Friendship>();
+
+        [NotMapped]
+        public virtual List<CitizenUser> Friends {
+            get
+            {
+                var friends = SentFriendRequests
+                    .Where(friendship => friendship.FriendshipStatus == FriendshipStatus.Accepted)
+                    .Select(friendship => friendship.Requested).ToList();
+                
+                friends.AddRange(ReceivedFriendRequests
+                    .Where(friendship => friendship.FriendshipStatus == FriendshipStatus.Accepted)
+                    .Select(friendship => friendship.Requester));
+                
+                return friends;
+            }
+        }
+
         public virtual MedicalInsurance MedicalInsurance { get; set; }
         public virtual List<RecordForm> RecordForms { get; set; }
         public virtual MedicineCertificate MedicineCertificate { get; set; }
         public virtual List<ReceptionOfPatients> DoctorsAppointments { get; set; }
     }
-
-    public enum Gender
-    {
-        NotChosen,
-        Male,
-        Female
-    };
 }

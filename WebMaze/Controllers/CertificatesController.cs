@@ -69,7 +69,7 @@ namespace WebMaze.Controllers
                     operationResult.Errors.ForEach(error => ModelState.AddModelError(string.Empty, error));
                 }
             }
-            
+
             return View(certificate);
         }
 
@@ -78,8 +78,8 @@ namespace WebMaze.Controllers
         public async Task<IActionResult> Issue(string userLogin)
         {
             var operationResult = await certificateService.IssueCertificate("Birth Certificate", userLogin,
-                "Government", "The certificate documents the birth of the person", TimeSpan.FromDays(3650));
-            
+                "Government", "The certificate documents that the employee is unfit for work", TimeSpan.FromDays(3650));
+
             if (!operationResult.Succeeded)
             {
                 operationResult.Errors.ForEach(error => ModelState.AddModelError(string.Empty, error));

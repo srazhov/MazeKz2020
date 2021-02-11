@@ -204,3 +204,4 @@ FakesAssemblies/
 /WebWriterV2/*.user
 /WebWriterV2/Log/*.txt
 /WebMaze/Settings.StyleCop
+/WebMaze/.config/dotnet-tools.json

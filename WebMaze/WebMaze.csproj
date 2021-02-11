@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>b288a7f0-d7aa-4a06-b1c5-a2c0f2c3c243</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,7 +23,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\image\Maralov\" />
-    <Folder Include="wwwroot\image\avatar\" />
   </ItemGroup>
 
 </Project>

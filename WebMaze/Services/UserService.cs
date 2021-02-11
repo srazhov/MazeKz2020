@@ -41,17 +41,17 @@ namespace WebMaze.Services
             return citizen;
         }
 
-        public virtual List<CitizenUser> GetUsers()
+        public List<CitizenUser> GetUsers()
         {
             return citizenUserRepository.GetAll();
         }
 
-        public virtual CitizenUser FindById(long id)
+        public CitizenUser FindById(long id)
         {
             return citizenUserRepository.Get(id);
         }
 
-        public virtual CitizenUser FindByLogin(string login)
+        public CitizenUser FindByLogin(string login)
         {
             return citizenUserRepository.GetUserByLogin(login);
         }
@@ -61,22 +61,22 @@ namespace WebMaze.Services
             return citizenUserRepository.UserExists(login);
         }
 
-        public virtual void Save(CitizenUser user)
+        public void Save(CitizenUser user)
         {
             citizenUserRepository.Save(user);
         }
 
-        public virtual void Delete(CitizenUser user)
+        public void Delete(CitizenUser user)
         {
             citizenUserRepository.Delete(user.Id);
         }
 
-        public virtual void ChangePassword(CitizenUser user, string oldPassword, string newPassword)
+        public void ChangePassword(CitizenUser user, string oldPassword, string newPassword)
         {
             throw new NotImplementedException();
         }
 
-        public virtual async Task<OperationResult> SignInAsync(string userName, string password, bool isPersistent)
+        public async Task<OperationResult> SignInAsync(string userName, string password, bool isPersistent)
         {
             var user = citizenUserRepository.GetUserByNameAndPassword(userName, password);
 
@@ -103,12 +103,12 @@ namespace WebMaze.Services
             return OperationResult.Success();
         }
 
-        public virtual bool IsInRole(CitizenUser user, string roleName)
+        public bool IsInRole(CitizenUser user, string roleName)
         {
             return user.Roles.Any() && user.Roles.All(useRole => useRole.Name == roleName);
         }
 
-        public virtual OperationResult AddToRole(CitizenUser user, string roleName)
+        public OperationResult AddToRole(CitizenUser user, string roleName)
         {
             if (user == null)
             {
@@ -132,7 +132,7 @@ namespace WebMaze.Services
             return OperationResult.Success();
         }
 
-        public virtual OperationResult RemoveFromRole(CitizenUser user, string roleName)
+        public OperationResult RemoveFromRole(CitizenUser user, string roleName)
         {
             if (user == null)
             {
@@ -156,9 +156,25 @@ namespace WebMaze.Services
             return OperationResult.Success();
         }
 
-        public virtual List<CitizenUser> GetBlockedUsers()
+        public List<CitizenUser> GetBlockedUsers()
         {
             return citizenUserRepository.GetBlockedUsers().ToList();
+        }
+
+        public List<CitizenUser> SearchUsers(string searchTerm)
+        {
+            var usersAsQueryable = citizenUserRepository.GetUsersAsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                usersAsQueryable = usersAsQueryable.Where(user =>
+                        user.FirstName.ToLower().Contains(searchTerm.ToLower()) ||
+                        user.LastName.ToLower().Contains(searchTerm.ToLower()));
+            }
+
+            var foundUsers = usersAsQueryable.Take(10).OrderBy(user => user.FirstName).ToList();
+
+            return foundUsers;
         }
     }
 }

@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using WebMaze.DbStuff.Model;
+using WebMaze.DbStuff.Model.UserAccount;
 using WebMaze.DbStuff.Repository;
+using WebMaze.Infrastructure.Enums;
 using WebMaze.Services;
 
 namespace WebMaze.DbStuff
@@ -65,6 +67,7 @@ namespace WebMaze.DbStuff
                 {
                     Login = "Bill",
                     Password = "123",
+                    AvatarUrl = "/image/avatar/bill.jpg",
                     Balance = 120000000000,
                     RegistrationDate = new DateTime(2020, 10, 1),
                     LastLoginDate = new DateTime(2020, 10, 1),
@@ -79,6 +82,7 @@ namespace WebMaze.DbStuff
                 {
                     Login = "Musk",
                     Password = "123",
+                    AvatarUrl = "/image/avatar/musk.jpg",
                     Balance = 200000000000,
                     RegistrationDate = new DateTime(2020, 12, 15),
                     LastLoginDate = new DateTime(2020, 12, 15),
@@ -93,6 +97,7 @@ namespace WebMaze.DbStuff
                 {
                     Login = "Stroustrup",
                     Password = "123",
+                    AvatarUrl = "/image/avatar/stroustrup.png",
                     Balance = 5000000,
                     RegistrationDate = new DateTime(2020, 11, 5),
                     LastLoginDate = new DateTime(2020, 11, 5),

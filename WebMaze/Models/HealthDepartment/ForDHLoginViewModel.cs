@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebMaze.DbStuff.Model;
+using WebMaze.Infrastructure.Enums;
 using WebMaze.Models.CustomAttribute.Medecine;
 
 namespace WebMaze.Models.HealthDepartment
