@@ -1,0 +1,119 @@
+﻿@using WebMaze.Models.UserTasks
+@model List<UserTaskViewModel>
+
+@{
+    Layout = "_LayoutUserAccount";
+}
+
+<div class="container text-center">
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="card text-center mb-3">
+                <h3 class="mb-0 mt-2">@ViewData["Title"]</h3>
+                <div class="card-body">
+                    <div class="container-fluid p-0">
+                        <div class="d-flex mb-2">
+                            <div class="col-2 p-0 text-left">
+                                Finish
+                            </div>
+                            <div class="col-6 p-0 pr-4 text-center">
+                                Task
+                            </div>
+                            <div class="col-2 ml-1 text-left">
+                                Priority
+                            </div>
+                            <div class="col-2 text-center">
+                                Date
+                            </div>
+                        </div>
+                    </div>
+                    @foreach (var task in Model)
+                    {
+                        <div class="container-fluid p-0">
+                            <div class="d-flex">
+                                <div class="col-1 d-flex align-items-center">
+                                    <form asp-action="Complete" id="submitCheckbox" method="post">
+                                        <input type="hidden" name="id" value="@task.Id" />
+                                        <input class="bigcheckbox" type="checkbox" />
+                                    </form>
+                                </div>
+                                <div class="col-7 p-0 pl-4 text-left">
+                                    <div>@task.Name</div>
+                                    <small class="text-muted">@task.Description</small>
+                                </div>
+                                <div class="col-2 p-1 m-1 d-flex justify-content-center align-items-center">
+                                    @switch (task.Priority)
+                                    {
+                                        case TaskPriority.Low:
+                                            <h5>
+                                                <span class="badge badge-primary w-100">Low</span>
+                                            </h5>
+                                            break;
+                                        case TaskPriority.Medium:
+                                            <h5>
+                                                <span class="badge badge-warning w-100">Medium</span>
+                                            </h5>
+                                            break;
+                                        case TaskPriority.High:
+                                            <h5>
+                                                <span class="badge badge-danger w-100">High</span>
+                                            </h5>
+                                            break;
+                                    }
+                                </div>
+                                <div class="col-2 p-1 m-1 justify-content-end d-flex align-items-center">
+                                    @switch (task.RelativeDate)
+                                    {
+                                        case TaskRelativeDate.Today:
+                                        case TaskRelativeDate.Tomorrow:
+                                        case TaskRelativeDate.Completed:
+                                            <h5><span class="badge badge-info w-100">@task.RelativeDate.ToString()</span></h5>
+                                            break;
+                                        case TaskRelativeDate.NextSevenDays:
+                                            <h5><span class="badge badge-info w-100">@task.StartDate.DayOfWeek.ToString()</span></h5>
+                                            break;
+                                        case TaskRelativeDate.Upcoming:
+                                            <h5><span class="badge badge-info w-100">@task.StartDate.DayOfYear.ToString()</span></h5>
+                                            break;
+                                        case TaskRelativeDate.Overdue:
+                                            <h5><span class="badge badge-danger w-100">@task.RelativeDate.ToString()</span></h5>
+                                            break;
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 pl-0">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h2>Plan a task</h2>
+                    <partial name="_EditTaskPartial" model="new UserTaskViewModel
+                    { StartDate = DateTime.Now + TimeSpan.FromHours(1) }" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/tasks.js"></script>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

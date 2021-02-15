@@ -7,20 +7,29 @@ using WebMaze.DbStuff.Model;
 using WebMaze.DbStuff.Model.UserAccount;
 using WebMaze.DbStuff.Repository;
 using WebMaze.Infrastructure.Enums;
+using TaskStatus = WebMaze.Infrastructure.Enums.TaskStatus;
 
 namespace WebMaze.DbStuff
 {
     public class TestDataSeeder
     {
         private CitizenUserRepository citizenUserRepository;
+
         private RoleRepository roleRepository;
+
+        private FriendshipRepository friendshipRepository;
+
+        private UserTaskRepository userTaskRepository;
 
         public TestDataSeeder(IServiceScope scope)
         {
             citizenUserRepository = scope.ServiceProvider.GetService<CitizenUserRepository>();
             roleRepository = scope.ServiceProvider.GetService<RoleRepository>();
+            friendshipRepository = scope.ServiceProvider.GetService<FriendshipRepository>();
+            userTaskRepository = scope.ServiceProvider.GetService<UserTaskRepository>();
 
-            if (citizenUserRepository == null || roleRepository == null)
+            if (citizenUserRepository == null || roleRepository == null || friendshipRepository == null ||
+                userTaskRepository == null)
             {
                 throw new Exception("Cannot get services from ServiceProvider.");
             }
@@ -33,6 +42,8 @@ namespace WebMaze.DbStuff
             AddRegularUsers();
 
             AddCertificates();
+            AddFriendships();
+            AddUserTasksToBill();
         }
 
         private void AddDoctors()
@@ -250,6 +261,231 @@ namespace WebMaze.DbStuff
             }
 
             return certificate;
+        }
+
+
+        private void AddFriendships()
+        {
+            var friendLogins = new List<string> { "Bill", "Musk", "Arnold", "Chuck", "Stroustrup", "Anastasia", "Ivan" };
+            var friends = citizenUserRepository.GetUsersByLogins(friendLogins).ToList();
+
+            var friendships = new List<Friendship>()
+            {
+                new Friendship
+                {
+                    RequestDate = DateTime.Now-TimeSpan.FromDays(30),
+                    AcceptanceDate = DateTime.Now-TimeSpan.FromDays(29),
+                    FriendshipStatus = FriendshipStatus.Accepted,
+                    Requester = friends[0],
+                    Requested = friends[1]
+                },
+                new Friendship
+                {
+                    RequestDate = DateTime.Now-TimeSpan.FromDays(20),
+                    AcceptanceDate = DateTime.Now-TimeSpan.FromDays(19),
+                    FriendshipStatus = FriendshipStatus.Accepted,
+                    Requester = friends[0],
+                    Requested = friends[2]
+                },
+                new Friendship
+                {
+                    RequestDate = DateTime.Now-TimeSpan.FromDays(10),
+                    AcceptanceDate = DateTime.Now-TimeSpan.FromDays(9),
+                    FriendshipStatus = FriendshipStatus.Accepted,
+                    Requester = friends[0],
+                    Requested = friends[3]
+                },
+                new Friendship
+                {
+                    RequestDate = DateTime.Now-TimeSpan.FromDays(2),
+                    AcceptanceDate = DateTime.Now-TimeSpan.FromDays(1),
+                    FriendshipStatus = FriendshipStatus.Accepted,
+                    Requester = friends[0],
+                    Requested = friends[4]
+                },
+                new Friendship
+                {
+                    RequestDate = DateTime.Now-TimeSpan.FromDays(1),
+                    FriendshipStatus = FriendshipStatus.Pending,
+                    Requester = friends[5],
+                    Requested = friends[0]
+                },
+                new Friendship
+                {
+                    RequestDate = DateTime.Now,
+                    FriendshipStatus = FriendshipStatus.Pending,
+                    Requester = friends[6],
+                    Requested = friends[0]
+                }
+            };
+
+            var notExistFriendships = friendships.Where(f =>
+                !friendshipRepository.FriendshipBetweenUsersExists(f.Requester.Login, f.Requested.Login));
+
+            foreach (var friendship in notExistFriendships)
+            {
+                friendshipRepository.Save(friendship);
+            }
+        }
+
+        private void AddUserTasksToBill()
+        {
+            var bill = citizenUserRepository.GetUserByLogin("Bill");
+
+            var billTasks = new List<UserTask>()
+            {
+                new UserTask
+                {
+                    Name = "Develop task feature",
+                    Description = "Design an user interface and implement business logic",
+                    StartDate = DateTime.Now - TimeSpan.FromDays(1),
+                    Status = TaskStatus.Planned,
+                    Priority = TaskPriority.Medium,
+                    Owner = bill
+                },
+                new UserTask
+                {
+                    Name = "Add test data to database",
+                    Description = "Implement extension for database seeding. Ensure that admin account exists",
+                    StartDate = DateTime.Now + TimeSpan.FromHours(1),
+                    Status = TaskStatus.Planned,
+                    Priority = TaskPriority.Low,
+                    Owner = bill
+                },
+                new UserTask
+                {
+                    Name = "Migrate from Newtonsoft.Json to System.Text.Json",
+                    Description = "Remove all dependencies on Newtonsoft.Json and replace it with built-in Json",
+                    StartDate = DateTime.Now + TimeSpan.FromHours(2),
+                    Status = TaskStatus.Planned,
+                    Priority = TaskPriority.Medium,
+                    Owner = bill
+                },
+                new UserTask
+                {
+                    Name = "Fix bug with .Designer file",
+                    Description = "Last migration cause an error with DbContext file",
+                    StartDate = DateTime.Now + TimeSpan.FromHours(3),
+                    Status = TaskStatus.Planned,
+                    Priority = TaskPriority.High,
+                    Owner = bill
+                },
+                new UserTask
+                {
+                    Name = "Rename CitizenUser properties",
+                    Description = "Marriage and HaveChildren should be renamed to IsMarried and HasChildren",
+                    StartDate = DateTime.Now + TimeSpan.FromHours(4),
+                    Status = TaskStatus.Planned,
+                    Priority = TaskPriority.Low,
+                    Owner = bill
+                },
+                new UserTask
+                {
+                    Name = "Refactor user service",
+                    Description = "Make UserService class more readable",
+                    StartDate = DateTime.Now + TimeSpan.FromHours(5),
+                    Status = TaskStatus.Planned,
+                    Priority = TaskPriority.Low,
+                    Owner = bill
+                },
+                new UserTask
+                {
+                    Name = "Create custom theme for site",
+                    Description = "Find good theme in Internet and add it to website",
+                    StartDate = DateTime.Now + TimeSpan.FromDays(1),
+                    Status = TaskStatus.Planned,
+                    Priority = TaskPriority.Low,
+                    Owner = bill
+                },
+                new UserTask
+                {
+                    Name = "Merge with upstream",
+                    Description = "Pavel add new feature to the project. It should be pulled.",
+                    StartDate = DateTime.Now + TimeSpan.FromHours(30),
+                    Status = TaskStatus.Planned,
+                    Priority = TaskPriority.Medium,
+                    Owner = bill
+                },
+                new UserTask
+                {
+                    Name = "Find the cause of the bug with database updating",
+                    Description = "After last migration updates are not working",
+                    StartDate = DateTime.Now + TimeSpan.FromHours(31),
+                    Status = TaskStatus.Planned,
+                    Priority = TaskPriority.High,
+                    Owner = bill
+                },
+                new UserTask
+                {
+                    Name = "Add unique constraint to login",
+                    Description = "Login should be unique for whole database",
+                    StartDate = DateTime.Now + TimeSpan.FromHours(32),
+                    Status = TaskStatus.Planned,
+                    Priority = TaskPriority.High,
+                    Owner = bill
+                },
+                new UserTask
+                {
+                    Name = "Implement policy-based authorization",
+                    Description = "Create 2 policies: one for admins and one for users",
+                    StartDate = DateTime.Now + TimeSpan.FromHours(33),
+                    Status = TaskStatus.Planned,
+                    Priority = TaskPriority.High,
+                    Owner = bill
+                },
+                new UserTask
+                {
+                    Name = "Remove unnecessary code from project",
+                    Description = "Delete code that is unreachable by program",
+                    StartDate = DateTime.Now + TimeSpan.FromDays(3),
+                    Status = TaskStatus.Planned,
+                    Priority = TaskPriority.Low,
+                    Owner = bill
+                },
+                new UserTask
+                {
+                    Name = "Write unit-tests",
+                    Description = "Cover the project with unit-tests",
+                    StartDate = DateTime.Now + TimeSpan.FromDays(3),
+                    Status = TaskStatus.Planned,
+                    Priority = TaskPriority.Medium,
+                    Owner = bill
+                },
+                new UserTask
+                {
+                    Name = "Add administration page",
+                    Description = "It should perform CRUD operations with all database tables",
+                    StartDate = DateTime.Now + TimeSpan.FromDays(4),
+                    Status = TaskStatus.Planned,
+                    Priority = TaskPriority.High,
+                    Owner = bill
+                },
+                new UserTask
+                {
+                    Name = "Deploy website",
+                    Description = "Find free hosting and publish website to it",
+                    StartDate = DateTime.Now + TimeSpan.FromDays(5),
+                    Status = TaskStatus.Planned,
+                    Priority = TaskPriority.High,
+                    Owner = bill
+                },
+                new UserTask
+                {
+                    Name = "Test deployed website",
+                    Description = "Search for bugs and make hot fixes",
+                    StartDate = DateTime.Now + TimeSpan.FromDays(10),
+                    Status = TaskStatus.Planned,
+                    Priority = TaskPriority.High,
+                    Owner = bill
+                }
+            };
+
+            var notExistBillTasks = billTasks.Where(task => !userTaskRepository.TaskWithNameExists(task.Name));
+
+            foreach (var billTask in notExistBillTasks)
+            {
+                userTaskRepository.Save(billTask);
+            }
         }
     }
 }

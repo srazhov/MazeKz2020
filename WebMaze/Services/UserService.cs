@@ -103,6 +103,11 @@ namespace WebMaze.Services
             return OperationResult.Success();
         }
 
+        public CitizenUser GetUserByLogin(string userLogin)
+        {
+            return citizenUserRepository.GetUserByLogin(userLogin);
+        }
+
         public bool IsInRole(CitizenUser user, string roleName)
         {
             return user.Roles.Any() && user.Roles.All(useRole => useRole.Name == roleName);

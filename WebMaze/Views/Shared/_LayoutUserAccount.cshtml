@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="~/css/UserAccount.css?t=@DateTime.Now.Ticks" />
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/js/user-account-layout.js"></script>
     @RenderSection("Scripts", required: false)
 </head>
 <body>
@@ -61,28 +62,46 @@
 
     <div class="wrapper">
         <nav id="sidebar" class="sidebar">
-            <div class="p-2">
-                <ul class="list-unstyled components mb-5">
-                    <li class="active">
-                        <a asp-controller="Account" asp-action="MyProfile">My profile</a>
-                    </li>
-                    <li>
-                        <a href="#">Messenger</a>
-                    </li>
-                    <li>
-                        <a asp-controller="Friends" asp-action="Index">Friends</a>
-                    </li>
-                    <li>
-                        <a asp-controller="UserTasks" asp-action="Index">Tasks</a>
-                    </li>
-                    <li>
-                        <a asp-controller="Certificates" asp-action="Index">Certificates</a>
-                    </li>
-                    <li>
-                        <a asp-controller="Transactions" asp-action="Index">Transactions</a>
-                    </li>
-                </ul>
-            </div>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <a asp-controller="Account" asp-action="MyProfile">My profile</a>
+                </li>
+                <li class="list-group-item">
+                    <a href="#">Messenger</a>
+                </li>
+                <li class="list-group-item">
+                    <a asp-action="Index" asp-controller="Friends">Friends</a>
+                </li>
+                <li class="list-group-item pr-3">
+                    <a data-toggle="collapse" href="#tasksCollapse" aria-expanded="true" aria-controls="tasksCollapse" class="dropdown-toggle text-right">
+                        Tasks
+                    </a>
+                    <ul class="list-group list-group-flush bg-light p-0 collapse" id="tasksCollapse">
+                        <li class="list-group-item border-0 p-0 pl-2">
+                            <hr class="m-0" />
+                            <a asp-action="Tasks" asp-controller="UserTasks" asp-route-relativeDateString="Today">Today</a>
+                        </li>
+                        <li class="list-group-item border-0 p-0 pl-2">
+                            <a asp-action="Tasks" asp-controller="UserTasks" asp-route-relativeDateString="Tomorrow">Tomorrow</a>
+                        </li>
+                        <li class="list-group-item border-0 p-0 pl-2">
+                            <a asp-action="Tasks" asp-controller="UserTasks" asp-route-relativeDateString="NextSevenDays">Next 7 days</a>
+                        </li>
+                        <li class="list-group-item border-0 p-0 pl-2">
+                            <a asp-action="Tasks" asp-controller="UserTasks" asp-route-relativeDateString="Upcoming">Upcoming</a>
+                        </li>
+                        <li class="list-group-item border-0 p-0 pl-2">
+                            <a asp-action="Tasks" asp-controller="UserTasks" asp-route-relativeDateString="Completed">Completed</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="list-group-item">
+                    <a asp-action="Index" asp-controller="Certificates">Certificates</a>
+                </li>
+                <li class="list-group-item">
+                    <a asp-action="Index" asp-controller="Transactions">Transactions</a>
+                </li>
+            </ul>
         </nav>
 
         <div class="container">

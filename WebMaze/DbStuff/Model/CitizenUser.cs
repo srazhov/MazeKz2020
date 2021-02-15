@@ -56,6 +56,8 @@ namespace WebMaze.DbStuff.Model
 
         public virtual List<Certificate> Certificates { get; set; } = new List<Certificate>();
 
+        public virtual List<UserTask> Tasks { get; set; } = new List<UserTask>();
+
         public virtual List<Transaction> SentTransactions { get; set; } = new List<Transaction>();
 
         public virtual List<Transaction> ReceivedTransactions { get; set; } = new List<Transaction>();

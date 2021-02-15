@@ -33,7 +33,7 @@ namespace WebMaze.DbStuff
 
         public DbSet<BusRouteTime> BusRouteTime { get; set; }
 
-        public DbSet<UserTask> UserTasks { get; set; }
+        public DbSet<UserTask> Tasks { get; set; }
 
         public DbSet<Certificate> Certificates { get; set; }
 
@@ -82,6 +82,10 @@ namespace WebMaze.DbStuff
             modelBuilder.Entity<CitizenUser>()
                 .HasMany(x => x.DoctorsAppointments)
                 .WithOne(x => x.EnrolledCitizen);
+
+            modelBuilder.Entity<CitizenUser>()
+                .HasMany(citizenUser => citizenUser.Tasks)
+                .WithOne(userTask => userTask.Owner);
 
             modelBuilder.Entity<CitizenUser>()
                 .HasMany(citizenUser => citizenUser.Certificates)

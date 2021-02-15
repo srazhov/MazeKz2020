@@ -62,7 +62,6 @@ namespace WebMaze
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=WebMazeKz;Trusted_Connection=True;MultipleActiveResultSets=true;";
-            
             services.AddDbContext<WebMazeContext>(option => option.UseSqlServer(connectionString));
 
             services.AddAuthentication(AuthMethod)
@@ -116,6 +115,8 @@ namespace WebMaze
 
             services.AddScoped(s => new FriendshipService(s.GetService<FriendshipRepository>(),
                 s.GetService<CitizenUserRepository>()));
+
+            services.AddScoped(s => new TaskService(s.GetService<UserTaskRepository>()));
 
             services.AddHttpContextAccessor();
 
@@ -179,7 +180,9 @@ namespace WebMaze
             configurationExpression.CreateMap<RecordForm, ListRecordFormViewModel>();
             configurationExpression.CreateMap<ListRecordFormViewModel, RecordForm>();
 
-            configurationExpression.CreateMap<UserTask, UserTaskViewModel>();
+            configurationExpression.CreateMap<UserTask, UserTaskViewModel>()
+                .ForMember(dest => dest.OwnerLogin, opt => opt.MapFrom(src => src.Owner.Login));
+            
             configurationExpression.CreateMap<UserTaskViewModel, UserTask>();
 
             configurationExpression.CreateMap<Certificate, CertificateViewModel>()
