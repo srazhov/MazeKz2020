@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -34,12 +35,14 @@ using WebMaze.Models.Roles;
 using WebMaze.Models.Police.Violation;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
+using WebMaze.Hubs;
 using WebMaze.Infrastructure;
 using WebMaze.Infrastructure.Enums;
 using WebMaze.Models.Friends;
 using WebMaze.Models.Friendships;
 using WebMaze.Models.HDDoctor;
 using WebMaze.Models.HDManager;
+using WebMaze.Models.Messenger;
 using WebMaze.Models.Transactions;
 using WebMaze.Models.Users;
 
@@ -118,6 +121,9 @@ namespace WebMaze
 
             services.AddScoped(s => new TaskService(s.GetService<UserTaskRepository>()));
 
+            services.AddScoped(s => new MessengerService(s.GetService<MessageRepository>(), s.GetService<UserService>(),
+                s.GetService<FriendshipService>()));
+
             services.AddHttpContextAccessor();
 
             services.AddControllersWithViews().AddJsonOptions(opt =>
@@ -127,6 +133,7 @@ namespace WebMaze
             });
 
             services.AddHttpClient<CertificateService>();
+            services.AddSignalR();
         }
 
         private void RegistrationMapper(IServiceCollection services)
@@ -147,10 +154,40 @@ namespace WebMaze
 
             configurationExpression.CreateMap<FriendshipViewModel, Friendship>();
 
+            configurationExpression.CreateMap<UserTask, UserTaskViewModel>()
+                .ForMember(dest => dest.OwnerLogin, opt => opt.MapFrom(src => src.Owner.Login));
+
+            configurationExpression.CreateMap<UserTaskViewModel, UserTask>();
+
+            configurationExpression.CreateMap<Certificate, CertificateViewModel>()
+                .ForMember(dest => dest.OwnerLogin, opt => opt.MapFrom(src => src.Owner.Login));
+
+            configurationExpression.CreateMap<CertificateViewModel, Certificate>();
+
+            configurationExpression.CreateMap<Role, RoleViewModel>()
+                .ForMember(dest => dest.UserLogins, opt => opt.MapFrom(src => src.Users.Select(t => t.Login)));
+
+            configurationExpression.CreateMap<RoleViewModel, Role>();
+
+            configurationExpression.CreateMap<Transaction, TransactionViewModel>()
+                .ForMember(dest => dest.SenderLogin, opt => opt.MapFrom(src => src.Sender.Login))
+                .ForMember(dest => dest.RecipientLogin, opt => opt.MapFrom(src => src.Recipient.Login));
+
+            configurationExpression.CreateMap<TransactionViewModel, Transaction>();
+
+            configurationExpression.CreateMap<Message, MessageViewModel>()
+                .ForMember(dest => dest.SenderLogin, opt => opt.MapFrom(src => src.Sender.Login))
+                .ForMember(dest => dest.RecipientLogin, opt => opt.MapFrom(src => src.Recipient.Login))
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date.ToString("HH:mm, dd MMM")));
+
+            configurationExpression.CreateMap<TransactionViewModel, Transaction>();
+
             configurationExpression.CreateMap<CitizenUser, RegistrationViewModel>();
             configurationExpression.CreateMap<RegistrationViewModel, CitizenUser>();
 
-            configurationExpression.CreateMap<Adress, AdressViewModel>();
+            configurationExpression.CreateMap<Adress, AdressViewModel>()
+                .ForMember(dest => dest.OwnerLogin, opt => opt.MapFrom(src => src.Owner.Login));
+            
             configurationExpression.CreateMap<AdressViewModel, Adress>();
 
             configurationExpression.CreateMap<HealthDepartment, HealthDepartmentViewModel>();
@@ -180,15 +217,6 @@ namespace WebMaze
             configurationExpression.CreateMap<RecordForm, ListRecordFormViewModel>();
             configurationExpression.CreateMap<ListRecordFormViewModel, RecordForm>();
 
-            configurationExpression.CreateMap<UserTask, UserTaskViewModel>()
-                .ForMember(dest => dest.OwnerLogin, opt => opt.MapFrom(src => src.Owner.Login));
-            
-            configurationExpression.CreateMap<UserTaskViewModel, UserTask>();
-
-            configurationExpression.CreateMap<Certificate, CertificateViewModel>()
-                .ForMember(dest => dest.OwnerLogin, opt => opt.MapFrom(src => src.Owner.Login));
-
-            configurationExpression.CreateMap<CertificateViewModel, Certificate>();
 
             configurationExpression.CreateMap<Policeman, PolicemanViewModel>()
                 .ForMember(dest => dest.ProfileVM, opt => opt.MapFrom(p => p.User));
@@ -225,17 +253,6 @@ namespace WebMaze
 
             configurationExpression.CreateMap<CitizenUser, DoctorPageViewModel>();
             configurationExpression.CreateMap<DoctorPageViewModel, CitizenUser>();
-
-            configurationExpression.CreateMap<Role, RoleViewModel>()
-                .ForMember(dest => dest.UserLogins, opt => opt.MapFrom(src => src.Users.Select(t => t.Login)));
-
-            configurationExpression.CreateMap<RoleViewModel, Role>();
-
-            configurationExpression.CreateMap<Transaction, TransactionViewModel>()
-                .ForMember(dest => dest.SenderLogin, opt => opt.MapFrom(src => src.Sender.Login))
-                .ForMember(dest => dest.RecipientLogin, opt => opt.MapFrom(src => src.Recipient.Login));
-
-            configurationExpression.CreateMap<TransactionViewModel, Transaction>();
 
             configurationExpression.CreateMap<MedicineCertificate, MedicineCertificateViewModel>();
             configurationExpression.CreateMap<MedicineCertificateViewModel, MedicineCertificate>();
@@ -302,6 +319,10 @@ namespace WebMaze
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            var cultureInfo = new CultureInfo("en-US");
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
             app.UseRouting();
 
             // Кто ты?
@@ -315,6 +336,7 @@ namespace WebMaze
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHub<ChatHub>("/chathub");
             });
         }
     }

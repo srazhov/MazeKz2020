@@ -170,28 +170,16 @@ namespace WebMaze.Controllers
 
             return RedirectToAction("MyProfile");
         }
-    
-        [HttpGet]
-        public IActionResult AddAdress(long userId)
-        {
-            var viewModel = new AdressViewModel()
-            {
-                OwnerId = userId
-            };
-            return View(viewModel);
-        }
 
         [HttpPost]
-        public IActionResult AddAdress(AdressViewModel adressViewModel)
+        public IActionResult SaveAddress(AdressViewModel addressViewModel)
         {
-            var adress = mapper.Map<Adress>(adressViewModel);
-            var user = citizenUserRepository.Get(adressViewModel.OwnerId);
+            var address = mapper.Map<Adress>(addressViewModel);
+            var user = userService.FindByLogin(addressViewModel.OwnerLogin);
+            address.Owner = user;
+            adressRepository.Save(address);
 
-            adress.Owner = user;
-
-            adressRepository.Save(adress);
-
-            return RedirectToAction("MyProfile", new { id = adressViewModel.OwnerId });
+            return RedirectToAction("MyProfile");
         }
     }
 }

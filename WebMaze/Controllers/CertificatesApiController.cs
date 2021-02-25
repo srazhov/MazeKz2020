@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WebMaze.DbStuff.Model.UserAccount;
 using WebMaze.DbStuff.Repository;
+using WebMaze.Infrastructure.Enums;
 using WebMaze.Models.Certificates;
 
 namespace WebMaze.Controllers

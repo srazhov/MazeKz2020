@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebMaze.DbStuff.Model;
 using WebMaze.DbStuff.Model.UserAccount;
+using WebMaze.Infrastructure.Enums;
 using WebMaze.Models.Account;
 
 namespace WebMaze.Models.Certificates
@@ -21,7 +22,7 @@ namespace WebMaze.Models.Certificates
         public string Description { get; set; }
 
         [DisplayName("Image")]
-        public string ImageUrl { get; set; }
+        public string ImageUrl { get; set; } = Constants.DefaultCertificateImageUrl;
 
         [Required]
         [DisplayName("Issued by")]

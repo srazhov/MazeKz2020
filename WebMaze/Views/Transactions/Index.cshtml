@@ -1,48 +1,64 @@
 ﻿@using WebMaze.Models.Transactions;
 @model List<TransactionViewModel>
 
-<h2>User transactions</h2>
-<a asp-action="Make" class="btn btn-sm btn-primary">Make transaction</a>
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-<table class="table table-sm table-striped table-bordered m-2">
-    <thead>
-        <tr>
-            <th><label asp-for="@Model[0].Id"></label></th>
-            <th><label asp-for="@Model[0].Date"></label></th>
-            <th><label asp-for="@Model[0].Amount"></label></th>
-            <th><label asp-for="@Model[0].Description"></label></th>
-            <th><label asp-for="@Model[0].Category"></label></th>
-            <th><label asp-for="@Model[0].Type"></label></th>
-            <th><label asp-for="@Model[0].SenderLogin"></label></th>
-            <th><label asp-for="@Model[0].RecipientLogin"></label></th>
-            <th>Edit</th>
-            <th>Delete</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var transaction in Model)
-        {
-            <tr>
-                <td>@transaction.Id</td>
-                <td>@transaction.Date</td>
-                <td>@transaction.Amount</td>
-                <td>@transaction.Description</td>
-                <td>@transaction.Category</td>
-                <td>@transaction.Type</td>
-                <td>@transaction.SenderLogin</td>
-                <td>@transaction.RecipientLogin</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@transaction.Id" class="btn btn-primary btn-sm btn-block">
-                        Edit
-                    </a>
-                </td>
-                <td>
-                    <form asp-action="Delete" method="post">
-                        <input type="hidden" name="id" value="@transaction.Id" />
-                        <button type="submit" class="btn btn-danger btn-sm btn-block">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+@{
+    Layout = "_LayoutUserAccount";
+}
+
+<div class="container text-center">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h2>User transactions</h2>
+                    <div class="text-left ml-2"><button id="makeToggle" class="btn btn-sm btn-primary">Make transaction</button></div>
+                    <div class="row justify-content-center">
+                        <div id="makeForm" class="col-5 mb-2">
+                            <partial name="_MakeTransactionPartial" model="new TransactionViewModel()" />
+                        </div>
+                    </div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <table class="table table-sm table-striped table-bordered m-2">
+                        <thead>
+                            <tr>
+                                <th><label asp-for="@Model[0].Id"></label></th>
+                                <th><label asp-for="@Model[0].Date"></label></th>
+                                <th><label asp-for="@Model[0].Amount"></label></th>
+                                <th><label asp-for="@Model[0].Description"></label></th>
+                                <th><label asp-for="@Model[0].Category"></label></th>
+                                <th><label asp-for="@Model[0].Type"></label></th>
+                                <th><label asp-for="@Model[0].SenderLogin"></label></th>
+                                <th><label asp-for="@Model[0].RecipientLogin"></label></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var transaction in Model)
+                            {
+                                <tr>
+                                    <td>@transaction.Id</td>
+                                    <td>@transaction.Date</td>
+                                    <td>@transaction.Amount</td>
+                                    <td>@transaction.Description</td>
+                                    <td>@transaction.Category</td>
+                                    <td>@transaction.Type</td>
+                                    <td>@transaction.SenderLogin</td>
+                                    <td>@transaction.RecipientLogin</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $('#makeForm form').hide();
+    $("#makeToggle").on("click",
+        function () {
+            $('#makeForm form').slideToggle(500);
+        });
+
+</script>

@@ -22,13 +22,7 @@ namespace WebMaze.DbStuff
             {
                 AddIfNotExistRoles(scope);
                 AddIfNotExistAdmins(scope);
-
-                var webHostEnvironment = scope.ServiceProvider.GetService<IWebHostEnvironment>();
-
-                if (webHostEnvironment.IsDevelopment())
-                {
-                    new TestDataSeeder(scope).SeedData();
-                }
+                new TestDataSeeder(scope).SeedData();
             }
 
             return host;

@@ -28,7 +28,7 @@
                                 </form>
                                 break;
                             case FriendshipStatus.Accepted:
-                                <a asp-action="Message" asp-route-id="@Model.Id" class="btn btn-primary btn-sm btn-block my-2">Message</a>
+                                <a asp-action="Chat" asp-controller="Messenger" asp-route-recipientLogin="@Model.Login" class="btn btn-primary btn-sm btn-block my-2">Message</a>
                                 <form asp-controller="Friends" asp-action="Unfriend" method="post">
                                     <input type="hidden" name="userLogin" value="@Model.Login" />
                                     <button type="submit" class="btn btn-danger btn-sm btn-block">Unfriend</button>
@@ -92,10 +92,49 @@
                     </div>
                     <div class="card text-left mb-3">
                         <div class="card-body">
-                            <strong>@Model.Login's Certificates:</strong>
+                            <div class="mb-2">
+                                <strong>@Model.Login's certificates:</strong>
+                            </div>
+                            <div class="d-flex flex-wrap">
+                                @foreach (var certificate in Model.Certificates)
+                                {
+                                    <div id="certificate-detail-@certificate.Id" onclick="popupSection(this.id)" class="cursor-pointer col-4 p-2 pb-0">
+                                        <img src="/image/certificates/default_certificate.jpg" class="img-fluid" alt="Certificate image">
+                                        <div class="mt-2 text-center">
+                                            @certificate.Name
+                                        </div>
+                                    </div>
+                                }
+                            </div>
                             @foreach (var certificate in Model.Certificates)
                             {
-                                <div>@certificate.Name</div>
+                                <div id="popup-section-@certificate.Id" class="container border border-info p-3 px-3 mb-3" style="display: none;">
+                                    <div class="text-center">
+                                        <strong>@certificate.Name</strong>
+                                    </div>
+                                    <hr class="m-2" />
+                                    <div class="row mb-2">
+                                        <div class="col">
+                                            Description: @certificate.Description
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label asp-for="@certificate.IssuedBy"></label>: @certificate.IssuedBy
+                                        </div>
+                                        <div class="col-6">
+                                            Status: @certificate.Status
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label asp-for="@certificate.IssueDate"></label>: @certificate.IssueDate.ToString("d")
+                                        </div>
+                                        <div class="col-6">
+                                            <label asp-for="@certificate.ExpiryDate"></label>: @certificate.ExpiryDate.ToString("d")
+                                        </div>
+                                    </div>
+                                </div>
                             }
                         </div>
                     </div>
@@ -104,3 +143,11 @@
         </div>
     </div>
 </div>
+
+
+<script type="text/javascript">
+    function popupSection(certificateIdStr) {
+        var certificateId = certificateIdStr.replace(/certificate-detail-/, '');
+        $(`#popup-section-${certificateId}`).slideToggle(500);
+    }
+</script>

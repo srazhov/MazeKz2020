@@ -19,42 +19,39 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebMaze</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Smart city</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
-                        <li>
-                            <a class="nav-link text-dark" href="/Home/Index">Home</a>
+                        <li class="mr-auto">
+                            <a asp-action="Index" asp-controller="Home" class="nav-link text-dark">Home</a>
                         </li>
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li>
-                                <a class="nav-link text-dark" href="/Account/MyProfile">Profile @userService.GetCurrentUser()?.Login</a>
+                                <vc:balance-summary />
                             </li>
                             <li>
-                                <a class="nav-link text-dark" href="/Account/Logout">Logout</a>
+                                <a asp-action="MyProfile" asp-controller="Account" class="nav-link text-dark">Profile @userService.GetCurrentUser()?.Login</a>
+                            </li>
+                            <li>
+                                <a asp-action="Logout" asp-controller="Account" class="nav-link text-dark">Log out</a>
                             </li>
                         }
                         else
                         {
                             <li>
-                                <a class="nav-link text-dark" href="/Account/Login">Login</a>
+                                <a asp-action="Registration" asp-controller="Account" class="nav-link text-dark">Registration</a>
                             </li>
                             <li>
-                                <a class="nav-link text-dark" href="/Account/Registration">Registration</a>
+                                <a asp-action="Login" asp-controller="Account" class="nav-link text-dark">Log in</a>
                             </li>
                         }
-                        <li>
-                            <a class="nav-link text-dark" href="/Student/Index">Students page</a>
-                        </li>
                     </ul>
                 </div>
-                <ul class="nav navbar-nav navbar-right">
-                    <vc:balance-summary />
-                </ul>
             </div>
         </nav>
     </header>
@@ -66,7 +63,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            Этот сайт сделал я сам
+            Developed by .NET Web Development Training participants
         </div>
     </footer>
 </body>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebMaze.DbStuff.Model.UserAccount;
+using WebMaze.Infrastructure.Enums;
 
 namespace WebMaze.DbStuff.Repository
 {

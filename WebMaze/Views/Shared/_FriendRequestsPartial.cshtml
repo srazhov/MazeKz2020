@@ -1,27 +1,29 @@
 ﻿@model List<WebMaze.Models.Friends.FriendRequestViewModel>
 
-<div class="container">
+<div class="container p-2">
     @foreach (var friendRequest in Model)
     {
-        <div class="row">
-            <div class="col">
-                <img src="@friendRequest.Requester.AvatarUrl" class="rounded-circle mx-auto d-block" height="75" width="75" alt="Profile picture">
+        <div class="row mb-2">
+            <div class="col-4">
+                <img src="@friendRequest.Requester.AvatarUrl" class="rounded-circle" height="75" width="75" alt="Profile picture">
             </div>
-            <div class="col">
-                <div class="row">
-                    <a asp-controller="Users" asp-action="Profile" asp-route-userLogin="@friendRequest.Requester.Login">
-                        <strong>@friendRequest.Requester.FirstName @friendRequest.Requester.LastName</strong>
-                    </a>
-                </div>
-                <div class="row mt-2">
-                    <form asp-controller="Friends" asp-action="AcceptFriendRequest" method="post">
-                        <input type="hidden" name="id" value="@friendRequest.Id" />
-                        <button type="submit" class="btn btn-success btn-sm btn-block mr-2">Accept</button>
-                    </form>
-                    <form asp-controller="Friends" asp-action="DeclineFriendRequest" method="post">
-                        <input type="hidden" name="id" value="@friendRequest.Id" />
-                        <button type="submit" class="btn btn-danger btn-sm btn-block">Decline</button>
-                    </form>
+            <div class="col-8">
+                <div class="container">
+                    <div class="row">
+                        <a asp-controller="Users" asp-action="Profile" asp-route-userLogin="@friendRequest.Requester.Login">
+                            <strong>@friendRequest.Requester.FirstName @friendRequest.Requester.LastName</strong>
+                        </a>
+                    </div>
+                    <div class="row mt-2">
+                        <form asp-controller="Friends" asp-action="AcceptFriendRequest" method="post">
+                            <input type="hidden" name="id" value="@friendRequest.Id" />
+                            <button type="submit" class="btn btn-success btn-sm mr-2">Accept</button>
+                        </form>
+                        <form asp-controller="Friends" asp-action="DeclineFriendRequest" method="post">
+                            <input type="hidden" name="id" value="@friendRequest.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm">Decline</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

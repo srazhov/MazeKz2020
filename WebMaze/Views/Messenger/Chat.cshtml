@@ -1,0 +1,50 @@
+﻿@model WebMaze.Models.Messenger.ChatViewModel
+
+@{
+    Layout = "_LayoutUserAccount";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="card text-center mb-3">
+                <div class="card-header py-1 px-2">
+                    <div class="d-flex align-content-center flex-wrap">
+                        <img src="@Model.Recipient.AvatarUrl" class="rounded-circle" height="60" width="60" alt="User avatar">
+                        <div class="align-self-center ml-3">
+                            <h4>Chat with @Model.Recipient.FirstName @Model.Recipient.LastName</h4>
+                        </div>
+                    </div>
+                </div>
+                <div id="messages" class="card-body messages-card-body">
+                </div>
+                <div class="card-footer">
+                    <div class="input-group">
+                        <textarea id="messageInput" class="form-control" placeholder="Write your message..."></textarea>
+                        <div class="input-group-append">
+                            <span id="sendButton" class="input-group-text btn px-4"><i><strong>Send</strong></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card text-left mb-3">
+                        <div class="card-body py-0">
+                            <vc:recent-chats />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>
+
+<script type="text/javascript">
+    var chat = @Html.Raw(Json.Serialize(Model)); 
+</script>

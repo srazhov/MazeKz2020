@@ -1,0 +1,77 @@
+﻿@using WebMaze.Models.UserTasks
+
+<div class="container text-center">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12">
+                                <h1>Tasks CRUD</h1>
+                                <div class="row justify-content-center">
+                                    <div class="col-5">
+                                        <button id="addToggle" class="btn btn-primary btn-sm m-2">
+                                            <h3>Add task</h3></button>
+                                        <div id="addForm">
+                                            <partial name="_AddTaskPartial" model="new UserTaskViewModel() {StartDate = DateTime.Now, EndDate = DateTime.Now + TimeSpan.FromHours(1)}" />
+                                        </div>
+                                    </div>
+                                    <div class="col-5">
+                                        <button class="btn btn-primary btn-sm m-2"><h3>Update task</h3></button>
+                                        <div id="updateForm">
+                                            <partial name="_AddTaskPartial" model="new UserTaskViewModel()" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="counter" class="m-2"></div>
+                                <table class="table table-sm table-striped table-bordered m-2">
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Start date</th>
+                                        <th>End date</th>
+                                        <th>Status</th>
+                                        <th>Priority</th>
+                                        <th>Owner</th>
+                                        <th>Relative date</th>
+                                        <th>Update</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                    <tbody id="tBody"></tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var Uri = "@Url.Action("GetTasks", "UserTasksApi", null, Url.ActionContext.HttpContext.Request.Scheme)";
+    $('#addForm form').hide();
+    $('#updateForm form').hide();
+
+    function displayUpdateForm(id) {
+        var updateForm = $('#updateForm form');
+        $('input[name ="Id"]', updateForm).val(id);
+        $.get(`${Uri}/${id}`).done(function (item) {
+            $('input[name ="Name"]', updateForm).val(item.name);
+            $('input[name ="Description"]', updateForm).val(item.description);
+            $('input[name ="StartDate"]', updateForm).val(item.startDate.substring(0, 16));
+            $('input[name ="EndDate"]', updateForm).val(item.endDate.substring(0, 16));
+            $('input[name ="Priority"]', updateForm).val(item.priority);
+            $('input[name ="OwnerLogin"]', updateForm).val(item.ownerLogin);
+        });
+        updateForm.find('button').empty();
+        updateForm.find('button').append('Update');
+        updateForm.show();
+    }
+</script>
+
+<script src="/js/administration.js" asp-append-version="true"></script>

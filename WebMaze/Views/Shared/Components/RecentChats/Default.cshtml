@@ -1,0 +1,17 @@
+﻿@model IEnumerable<WebMaze.Models.Friends.FriendViewModel>
+
+<nav class="nav nav-pills flex-column">
+    <a asp-action="Index" asp-controller="Messenger" class="nav-link">All chats</a>
+    <hr class="ignore-parent-padding" />
+    <div class="nav-link">
+        <strong>Recent chats:</strong>
+        @foreach (var friend in Model)
+        {
+            <div>
+                <a asp-action="Chat" asp-controller="Messenger" asp-route-recipientLogin="@friend.Login" class="my-2">
+                    @friend.FirstName @friend.LastName
+                </a>
+            </div>
+        }
+    </div>
+</nav>

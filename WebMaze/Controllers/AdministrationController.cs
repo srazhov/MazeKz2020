@@ -14,5 +14,20 @@ namespace WebMaze.Controllers
         {
             return View();
         }
+
+        public IActionResult Certificates()
+        {
+            return View();
+        }
+
+        public IActionResult Tasks()
+        {
+            return View();
+        }
+
+        public IActionResult Transactions()
+        {
+            return View();
+        }
     }
 }

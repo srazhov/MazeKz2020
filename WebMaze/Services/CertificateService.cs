@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using WebMaze.DbStuff.Model.UserAccount;
+using WebMaze.Infrastructure.Enums;
 using WebMaze.Models.Certificates;
 
 namespace WebMaze.Services

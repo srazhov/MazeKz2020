@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebMaze.Infrastructure.Enums;
 
 namespace WebMaze.DbStuff.Model.UserAccount
 {
@@ -22,12 +23,5 @@ namespace WebMaze.DbStuff.Model.UserAccount
         public CertificateStatus Status { get; set; }
 
         public virtual CitizenUser Owner { get; set; }
-    }
-
-    public enum CertificateStatus
-    {
-        Valid = 0,
-        Expired = 1,
-        Revoked = 2
     }
 }

@@ -6,7 +6,7 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-sm-7">
+        <div class="col-sm-7 p-2">
             <div class="card text-center mb-3">
                 <div class="card-body">
                     Friend requests:
@@ -21,10 +21,17 @@
                         {
                             <div class="col-sm-4 p-2">
                                 <div class="mb-2">
-                                    <a class="mb-2" asp-controller="Users" asp-action="Profile" asp-route-userLogin="@friend.Login"><strong>@friend.FirstName @friend.LastName</strong></a>
+                                    <a class="mb-2" asp-controller="Users" asp-action="Profile" asp-route-userLogin="@friend.Login">
+                                        <div>
+                                            <strong>@friend.FirstName</strong>
+                                        </div>
+                                        <div>
+                                            <strong>@friend.LastName</strong>
+                                        </div>
+                                    </a>
                                 </div>
                                 <img src="@friend.AvatarUrl" class="rounded-circle mx-auto d-block" height="100" width="100" alt="Profile picture">
-                                <a asp-action="Message" asp-route-id="@friend.Id" class="btn btn-primary btn-sm btn-block my-2">Message</a>
+                                <a asp-action="Chat" asp-controller="Messenger" asp-route-recipientLogin="@friend.Login" class="btn btn-primary btn-sm btn-block my-2">Message</a>
                                 <form asp-action="Unfriend" method="post">
                                     <input type="hidden" name="userLogin" value="@friend.Login" />
                                     <button type="submit" class="btn btn-warning btn-sm btn-block">Unfriend</button>
@@ -36,7 +43,7 @@
             </div>
         </div>
 
-        <div class="col-sm-5">
+        <div class="col-sm-5 p-2">
             <div class="card text-center mb-3">
                 <div class="card-body">
                     Find users:

@@ -31,14 +31,15 @@ namespace WebMaze.Services
         {
             var idStr = httpContextAccessor.HttpContext.
                 User.Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            
             if (string.IsNullOrEmpty(idStr))
             {
                 return null;
             }
 
             var id = int.Parse(idStr);
-            var citizen = citizenUserRepository.Get(id);
-            return citizen;
+            var user = citizenUserRepository.Get(id);
+            return user;
         }
 
         public List<CitizenUser> GetUsers()

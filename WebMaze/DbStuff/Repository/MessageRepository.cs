@@ -12,6 +12,16 @@ namespace WebMaze.DbStuff.Repository
         {
         }
 
+        public IQueryable<Message> GetTwoUsersMessages(string senderLogin, string recipientLogin)
+        {
+            return dbSet.Where(message =>
+                message.Sender.Login == senderLogin && message.Recipient.Login == recipientLogin ||
+                message.Sender.Login == recipientLogin && message.Recipient.Login == senderLogin).AsQueryable();
+        }
 
+        public bool MessageWithTextExists(string messageText)
+        {
+            return dbSet.Any(message => message.Text == messageText);
+        }
     }
 }

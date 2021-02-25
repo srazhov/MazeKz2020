@@ -31,7 +31,7 @@ namespace WebMaze.Controllers
 
         // GET: api/tasks
         [HttpGet]
-        public ActionResult<IEnumerable<UserTaskViewModel>> GetTasks([FromQuery] string relativeDateString)
+        public ActionResult<IEnumerable<UserTaskViewModel>> GetTasks([FromQuery] string relativeDateString = "Upcoming")
         {
             var parsed = Enum.TryParse(relativeDateString, out TaskRelativeDate relativeDate);
 

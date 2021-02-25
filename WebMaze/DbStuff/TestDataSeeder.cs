@@ -21,15 +21,18 @@ namespace WebMaze.DbStuff
 
         private UserTaskRepository userTaskRepository;
 
+        private MessageRepository messageRepository;
+
         public TestDataSeeder(IServiceScope scope)
         {
             citizenUserRepository = scope.ServiceProvider.GetService<CitizenUserRepository>();
             roleRepository = scope.ServiceProvider.GetService<RoleRepository>();
             friendshipRepository = scope.ServiceProvider.GetService<FriendshipRepository>();
             userTaskRepository = scope.ServiceProvider.GetService<UserTaskRepository>();
+            messageRepository = scope.ServiceProvider.GetService<MessageRepository>();
 
             if (citizenUserRepository == null || roleRepository == null || friendshipRepository == null ||
-                userTaskRepository == null)
+                userTaskRepository == null || messageRepository == null)
             {
                 throw new Exception("Cannot get services from ServiceProvider.");
             }
@@ -42,7 +45,7 @@ namespace WebMaze.DbStuff
             AddRegularUsers();
 
             AddCertificates();
-            AddFriendships();
+            AddFriendshipsAndMessages();
             AddUserTasksToBill();
         }
 
@@ -263,10 +266,9 @@ namespace WebMaze.DbStuff
             return certificate;
         }
 
-
-        private void AddFriendships()
+        private void AddFriendshipsAndMessages()
         {
-            var friendLogins = new List<string> { "Bill", "Musk", "Arnold", "Chuck", "Stroustrup", "Anastasia", "Ivan" };
+            var friendLogins = new List<string> { "Bill", "Musk", "Stroustrup", "Chuck", "Ivan", "Anastasia", "Arnold" };
             var friends = citizenUserRepository.GetUsersByLogins(friendLogins).ToList();
 
             var friendships = new List<Friendship>()
@@ -301,20 +303,20 @@ namespace WebMaze.DbStuff
                     AcceptanceDate = DateTime.Now-TimeSpan.FromDays(1),
                     FriendshipStatus = FriendshipStatus.Accepted,
                     Requester = friends[0],
-                    Requested = friends[4]
+                    Requested = friends[6]
                 },
                 new Friendship
                 {
                     RequestDate = DateTime.Now-TimeSpan.FromDays(1),
                     FriendshipStatus = FriendshipStatus.Pending,
-                    Requester = friends[5],
+                    Requester = friends[4],
                     Requested = friends[0]
                 },
                 new Friendship
                 {
                     RequestDate = DateTime.Now,
                     FriendshipStatus = FriendshipStatus.Pending,
-                    Requester = friends[6],
+                    Requester = friends[5],
                     Requested = friends[0]
                 }
             };
@@ -325,6 +327,102 @@ namespace WebMaze.DbStuff
             foreach (var friendship in notExistFriendships)
             {
                 friendshipRepository.Save(friendship);
+            }
+
+            var billMessages = new List<Message>()
+            {
+                new Message
+                {
+                    Date = DateTime.Now - TimeSpan.FromHours(1),
+                    Text = "Hi, how are you doing Bill?",
+                    Sender = friends[1],
+                    Recipient = friends[0]
+                },
+                new Message
+                {
+                    Date = DateTime.Now - TimeSpan.FromMinutes(9),
+                    Text = "Hi, Musk. I am OK, thank you. How about you?",
+                    Sender = friends[0],
+                    Recipient = friends[1]
+                },
+                new Message
+                {
+                    Date = DateTime.Now - TimeSpan.FromMinutes(8),
+                    Text = "I am good too. Have you fixed the bug with the chat?",
+                    Sender = friends[1],
+                    Recipient = friends[0]
+                },
+                new Message
+                {
+                    Date = DateTime.Now - TimeSpan.FromMinutes(1),
+                    Text = "Yes, as you can see now. Works great.",
+                    Sender = friends[0],
+                    Recipient = friends[1]
+                },
+                new Message
+                {
+                    Date = DateTime.Now - TimeSpan.FromMinutes(4),
+                    Text = "Hello, Bill.",
+                    Sender = friends[2],
+                    Recipient = friends[0]
+                },
+                new Message
+                {
+                    Date = DateTime.Now - TimeSpan.FromMinutes(3),
+                    Text = "Hello, Bjarne.",
+                    Sender = friends[0],
+                    Recipient = friends[2]
+                },
+                new Message
+                {
+                    Date = DateTime.Now - TimeSpan.FromMinutes(2),
+                    Text = "Could you please check the administration page of the site?",
+                    Sender = friends[2],
+                    Recipient = friends[0]
+                },
+                new Message
+                {
+                    Date = DateTime.Now - TimeSpan.FromMinutes(64),
+                    Text = "Hello, Bill. Are you free tomorrow?",
+                    Sender = friends[3],
+                    Recipient = friends[0]
+                },
+                new Message
+                {
+                    Date = DateTime.Now - TimeSpan.FromMinutes(63),
+                    Text = "I have to finish something, but I will be free after 3:30.",
+                    Sender = friends[0],
+                    Recipient = friends[3]
+                },
+                new Message
+                {
+                    Date = DateTime.Now - TimeSpan.FromMinutes(62),
+                    Text = "Do you want to get together after you finish work?",
+                    Sender = friends[3],
+                    Recipient = friends[0]
+                },
+                new Message
+                {
+                    Date = DateTime.Now - TimeSpan.FromMinutes(61),
+                    Text = "Yes, I do.",
+                    Sender = friends[0],
+                    Recipient = friends[3]
+                },
+                new Message
+                {
+                    Date = DateTime.Now - TimeSpan.FromMinutes(125),
+                    Text = "Hey, how have you been?",
+                    Sender = friends[6],
+                    Recipient = friends[0]
+                }
+            };
+
+            var notExistMessages =
+                billMessages.Where(message => !messageRepository.MessageWithTextExists(message.Text));
+
+            foreach (var message in notExistMessages)
+            {
+                messageRepository.Save(message);
             }
         }
 

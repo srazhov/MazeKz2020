@@ -1,0 +1,56 @@
+﻿@model IEnumerable<WebMaze.Models.Messenger.StartedChatViewModel>
+
+@{
+    Layout = "_LayoutUserAccount";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="card">
+                <div class="card-header">
+                    <form asp-action="Index" method="get">
+                        <div class="input-group">
+                            <input type="text" placeholder="Type friend's name..." name="searchTerm" class="form-control">
+                            <div class="input-group-prepend">
+                                <button type="submit" class="input-group-text"><i>Search</i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-body py-0">
+                    @foreach (var startedChat in Model)
+                    {
+                        <a asp-action="Chat" asp-controller="Messenger" asp-route-recipientLogin="@startedChat.Friend.Login" class="my-2">
+                            <div class="d-flex justify-content-between align-content-center flex-wrap my-2">
+                                <div>
+                                    <img src="@startedChat.Friend.AvatarUrl" class="rounded-circle" height="60" width="60" alt="User avatar">
+                                </div>
+                                <div class="flex-grow-1 d-flex flex-column justify-content-between ml-3">
+                                    <span>@startedChat.Friend.FirstName @startedChat.Friend.LastName</span>
+                                    <div class="text-muted">@startedChat.LastMessage?.Text</div>
+                                </div>
+                                <div class="text-muted ml-3">
+                                    <small>@startedChat.LastMessage?.Date</small>
+                                </div>
+                            </div>
+                        </a>
+                        <hr class="ignore-parent-padding" />
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card text-left mb-3">
+                        <div class="card-body py-0">
+                            <vc:recent-chats />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
