@@ -72,11 +72,6 @@ namespace WebMaze.Services
             citizenUserRepository.Delete(user.Id);
         }
 
-        public void ChangePassword(CitizenUser user, string oldPassword, string newPassword)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<OperationResult> SignInAsync(string userName, string password, bool isPersistent)
         {
             var user = citizenUserRepository.GetUserByNameAndPassword(userName, password);

@@ -12,12 +12,9 @@ namespace WebMaze.Services
     {
         private TransactionRepository transactionRepository;
 
-        private CitizenUserRepository citizenUserRepository;
-
-        public TransactionService(TransactionRepository transactionRepository, CitizenUserRepository citizenUserRepository)
+        public TransactionService(TransactionRepository transactionRepository)
         {
             this.transactionRepository = transactionRepository;
-            this.citizenUserRepository = citizenUserRepository;
         }
 
         public async Task<List<Transaction>> GetTransactionsAsync()

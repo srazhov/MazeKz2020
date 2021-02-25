@@ -92,7 +92,9 @@
                 <div class="card-body">
                     <h2>Plan a task</h2>
                     <partial name="_EditTaskPartial" model="new UserTaskViewModel
-                    { StartDate = DateTime.Now + TimeSpan.FromHours(1) }" />
+                                                            { StartDate = DateTime.Now + TimeSpan.FromHours(1),
+                                                                EndDate = DateTime.Now + TimeSpan.FromHours(2),
+                                                                OwnerLogin = User.Identity.Name }" />
                 </div>
             </div>
         </div>

@@ -27,11 +27,6 @@ namespace WebMaze.Controllers
             this.mapper = mapper;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
         [Route("Users/{userLogin}")]
         public IActionResult Profile(string userLogin)
         {

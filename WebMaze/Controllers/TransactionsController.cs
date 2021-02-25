@@ -10,6 +10,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using WebMaze.DbStuff.Model.UserAccount;
 using WebMaze.Models.Transactions;
 using WebMaze.Services;
@@ -19,17 +20,19 @@ namespace WebMaze.Controllers
     [Authorize]
     public class TransactionsController : Controller
     {
-        private TransactionService transactionService;
-
         private IMapper mapper;
 
         private readonly HttpClient httpClient;
 
-        public TransactionsController(TransactionService transactionService, IMapper mapper)
+        public TransactionsController(IMapper mapper, LinkGenerator linkGenerator, IHttpContextAccessor httpContextAccessor)
         {
-            this.transactionService = transactionService;
             this.mapper = mapper;
-            httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:44302/api/transactions/") };
+
+            var uri = $"{httpContextAccessor.HttpContext.Request.Scheme}://" +
+                      $"{httpContextAccessor.HttpContext.Request.Host}" +
+                      linkGenerator.GetPathByAction("GetTransactions", "TransactionsApi");
+            
+            httpClient = new HttpClient { BaseAddress = new Uri(uri) };
         }
 
         public async Task<IActionResult> Index()
@@ -43,7 +46,7 @@ namespace WebMaze.Controllers
 
         public IActionResult Make()
         {
-            return View();
+            return View("_MakeTransactionPartial", new TransactionViewModel());
         }
 
         [HttpPost]
@@ -52,7 +55,7 @@ namespace WebMaze.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(transactionViewModel);
+                return View("_MakeTransactionPartial", transactionViewModel);
             }
 
             transactionViewModel.SenderLogin = User.Identity.Name;
@@ -72,13 +75,11 @@ namespace WebMaze.Controllers
             var errorMessages = responseString.DeserializeCaseInsensitive<List<string>>();
             errorMessages.ForEach(errorMessage => ModelState.AddModelError(string.Empty, errorMessage));
 
-            return View(transactionViewModel);
+            return View("_MakeTransactionPartial", transactionViewModel);
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            //var transaction = await transactionService.GetTransactionByIdAsync(id);
-
             var responseString = await httpClient.GetStringAsync(id.ToString());
             var transactionViewModel = responseString.DeserializeCaseInsensitive<TransactionViewModel>();
 

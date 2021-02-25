@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TagHelpers\" />
     <Folder Include="wwwroot\image\Maralov\" />
     <Folder Include="wwwroot\image\certificates\" />
   </ItemGroup>

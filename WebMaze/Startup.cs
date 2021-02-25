@@ -64,6 +64,8 @@ namespace WebMaze
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
+
             var connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=WebMazeKz;Trusted_Connection=True;MultipleActiveResultSets=true;";
             services.AddDbContext<WebMazeContext>(option => option.UseSqlServer(connectionString));
 
@@ -113,8 +115,7 @@ namespace WebMaze
                 s.GetService<RoleRepository>(),
                 s.GetService<IHttpContextAccessor>()));
 
-            services.AddScoped(s => new TransactionService(s.GetService<TransactionRepository>(),
-                s.GetService<CitizenUserRepository>()));
+            services.AddScoped(s => new TransactionService(s.GetService<TransactionRepository>()));
 
             services.AddScoped(s => new FriendshipService(s.GetService<FriendshipRepository>(),
                 s.GetService<CitizenUserRepository>()));
@@ -124,6 +125,8 @@ namespace WebMaze
             services.AddScoped(s => new MessengerService(s.GetService<MessageRepository>(), s.GetService<UserService>(),
                 s.GetService<FriendshipService>()));
 
+            services.AddScoped(s => new TaskService(s.GetService<UserTaskRepository>()));
+
             services.AddHttpContextAccessor();
 
             services.AddControllersWithViews().AddJsonOptions(opt =>
@@ -132,7 +135,7 @@ namespace WebMaze
                 opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
-            services.AddHttpClient<CertificateService>();
+            services.AddScoped<CertificateService>();
             services.AddSignalR();
         }
 
@@ -187,7 +190,7 @@ namespace WebMaze
 
             configurationExpression.CreateMap<Adress, AdressViewModel>()
                 .ForMember(dest => dest.OwnerLogin, opt => opt.MapFrom(src => src.Owner.Login));
-            
+
             configurationExpression.CreateMap<AdressViewModel, Adress>();
 
             configurationExpression.CreateMap<HealthDepartment, HealthDepartmentViewModel>();

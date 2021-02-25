@@ -88,29 +88,6 @@ namespace WebMaze.Controllers
             var urlReferrer = Request.Headers["Referer"].ToString();
 
             return Redirect(urlReferrer);
-
-            /* Second approach, a lot of code duplicates:
-
-            var uri = new Uri(urlReferrer);
-            var queryDictionary = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
-            
-            var certificates = new List<CertificateViewModel>();
-
-            if (!queryDictionary.Any())
-            {
-                certificates = await certificateService.GetCertificatesAsync();
-            }
-            else if(!string.IsNullOrWhiteSpace(queryDictionary["certificateName"]))
-            {
-                certificates = await certificateService.GetCertificatesByName(queryDictionary["certificateName"]);
-            }
-            else if (!string.IsNullOrWhiteSpace(queryDictionary["userLogin"]))
-            {
-                certificates = await certificateService.GetUserCertificates(queryDictionary["userLogin"]);
-            }
-
-            return View(nameof(Index), certificates);
-            */
         }
 
         [HttpPost]
