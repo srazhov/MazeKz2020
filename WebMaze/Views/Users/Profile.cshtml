@@ -1,4 +1,5 @@
-﻿@model WebMaze.Models.Users.ProfileViewModel
+﻿@using WebMaze.Models.Friends
+@model WebMaze.Models.Users.ProfileViewModel
 
 @{
     Layout = "_LayoutUserAccount";
@@ -10,32 +11,7 @@
             <div class="card text-center mb-3">
                 <div class="card-body">
                     <img src="@Model.AvatarUrl" class="img-fluid" alt="Profile picture">
-                    @if (Model.Friendship == null || Model.Friendship.FriendshipStatus == FriendshipStatus.Declined)
-                    {
-                        <form asp-controller="Friends" asp-action="SendFriendRequest" method="post">
-                            <input type="hidden" name="userLogin" value="@Model.Login" />
-                            <button type="submit" class="btn btn-success btn-sm btn-block my-2">Send friend request</button>
-                        </form>
-                    }
-                    else
-                    {
-                        @switch (Model.Friendship.FriendshipStatus)
-                        {
-                            case FriendshipStatus.Pending:
-                                <form asp-controller="Friends" asp-action="CancelFriendRequest" method="post">
-                                    <input type="hidden" name="userLogin" value="@Model.Friendship.Id" />
-                                    <button type="submit" class="btn btn-danger btn-sm btn-block my-2">Cancel friend request</button>
-                                </form>
-                                break;
-                            case FriendshipStatus.Accepted:
-                                <a asp-action="Chat" asp-controller="Messenger" asp-route-recipientLogin="@Model.Login" class="btn btn-primary btn-sm btn-block my-2">Message</a>
-                                <form asp-controller="Friends" asp-action="Unfriend" method="post">
-                                    <input type="hidden" name="userLogin" value="@Model.Login" />
-                                    <button type="submit" class="btn btn-danger btn-sm btn-block">Unfriend</button>
-                                </form>
-                                break;
-                        }
-                    }
+                    <partial name="_FriendshipActionPartial" model="new FoundUserViewModel {Login = Model.Login, Friendship = Model.Friendship}" />
                 </div>
             </div>
             <div class="card text-center mb-3">
@@ -67,12 +43,12 @@
                                 <hr />
                                 <div class="row no-gutters">
                                     <div class="col">
-                                        <p>Birth date: @Model.BirthDate</p>
+                                        <p>Birth date: @Model.BirthDate.ToString("d")</p>
                                         <p>Gender: @Model.Gender</p>
                                         <p>Marital status: @(Model.IsMarried ? "Married" : "Single") </p>
                                     </div>
                                     <div class="col">
-                                        <p>Registration date: @Model.RegistrationDate</p>
+                                        <p>Registration date: @Model.RegistrationDate.ToString("d")</p>
                                         <p>Email: @Model.Email</p>
                                         <p>Phone number: @Model.PhoneNumber</p>
                                     </div>

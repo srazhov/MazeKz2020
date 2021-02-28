@@ -1,0 +1,28 @@
+﻿@model WebMaze.Models.Friends.FoundUserViewModel
+
+@if (Model.Friendship == null || Model.Friendship.FriendshipStatus == FriendshipStatus.Declined)
+{
+    <form asp-controller="Friends" asp-action="SendFriendRequest" method="post">
+        <input type="hidden" name="userLogin" value="@Model.Login" />
+        <button type="submit" class="btn btn-success btn-sm btn-block my-2">Send friend request</button>
+    </form>
+}
+else
+{
+    @switch (Model.Friendship.FriendshipStatus)
+    {
+        case FriendshipStatus.Pending:
+            <form asp-controller="Friends" asp-action="CancelFriendRequest" method="post">
+                <input type="hidden" name="userLogin" value="@Model.Friendship.Id" />
+                <button type="submit" class="btn btn-danger btn-sm btn-block my-2">Cancel friend request</button>
+            </form>
+            break;
+        case FriendshipStatus.Accepted:
+            <a asp-action="Chat" asp-controller="Messenger" asp-route-recipientLogin="@Model.Login" class="btn btn-primary btn-sm btn-block my-2">Message</a>
+            <form asp-controller="Friends" asp-action="Unfriend" method="post">
+                <input type="hidden" name="userLogin" value="@Model.Login" />
+                <button type="submit" class="btn btn-danger btn-sm btn-block">Unfriend</button>
+            </form>
+            break;
+    }
+}

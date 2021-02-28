@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebMaze.Infrastructure.Enums;
 using WebMaze.Models.Friends;
+using WebMaze.Models.Friendships;
 using WebMaze.Services;
 
 namespace WebMaze.Controllers
@@ -27,11 +28,16 @@ namespace WebMaze.Controllers
             this.mapper = mapper;
         }
 
-        public IActionResult Index()
+        public IActionResult Index([FromQuery] string searchTerm)
         {
             var user = userService.GetCurrentUser();
-            var foundUsers = userService.SearchUsers(string.Empty);
-            var foundUserViewModels = mapper.Map<List<FriendViewModel>>(foundUsers);
+            var foundUsers = userService.SearchUsers(searchTerm);
+            var foundUserViewModels = mapper.Map<List<FoundUserViewModel>>(foundUsers);
+            foundUserViewModels.ForEach(foundUser =>
+                foundUser.Friendship =
+                    mapper.Map<FriendshipViewModel>(
+                        friendshipService.GetFriendshipByUserLogins(user.Login, foundUser.Login)));
+            
             var friendViewModels = mapper.Map<List<FriendViewModel>>(user.Friends);
             var friendRequestsViewModels = mapper.Map<List<FriendRequestViewModel>>(
                 user.ReceivedFriendRequests.Where(friendship => friendship.FriendshipStatus == FriendshipStatus.Pending));
@@ -91,25 +97,6 @@ namespace WebMaze.Controllers
             var urlReferrer = Request.Headers["Referer"].ToString();
 
             return Redirect(urlReferrer);
-        }
-
-        public IActionResult SearchUsers(string searchTerm)
-        {
-            var user = userService.GetCurrentUser();
-            var foundUsers = userService.SearchUsers(searchTerm);
-            var foundUserViewModels = mapper.Map<List<FriendViewModel>>(foundUsers);
-            var friendViewModels = mapper.Map<List<FriendViewModel>>(user.Friends);
-            var friendRequestsViewModels = mapper.Map<List<FriendRequestViewModel>>(
-                user.ReceivedFriendRequests.Where(friendship => friendship.FriendshipStatus == FriendshipStatus.Pending));
-
-            var friendsViewModel = new FriendsViewModel
-            {
-                FoundUsers = foundUserViewModels,
-                Friends = friendViewModels,
-                FriendRequests = friendRequestsViewModels,
-            };
-
-            return View(nameof(Index), friendsViewModel);
         }
     }
 }

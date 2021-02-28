@@ -1,7 +1,4 @@
-﻿@using WebMaze.Services
-@inject UserService userService
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -34,7 +31,7 @@
                                 <vc:balance-summary />
                             </li>
                             <li>
-                                <a asp-action="MyProfile" asp-controller="Account" class="nav-link text-dark">Profile @userService.GetCurrentUser()?.Login</a>
+                                <a asp-action="MyProfile" asp-controller="Account" class="nav-link text-dark">Profile @User.Identity.Name</a>
                             </li>
                             <li>
                                 <a asp-action="Logout" asp-controller="Account" class="nav-link text-dark">Log out</a>

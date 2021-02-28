@@ -157,6 +157,8 @@ namespace WebMaze
 
             configurationExpression.CreateMap<FriendshipViewModel, Friendship>();
 
+            configurationExpression.CreateMap<CitizenUser, FoundUserViewModel>();
+
             configurationExpression.CreateMap<UserTask, UserTaskViewModel>()
                 .ForMember(dest => dest.OwnerLogin, opt => opt.MapFrom(src => src.Owner.Login));
 

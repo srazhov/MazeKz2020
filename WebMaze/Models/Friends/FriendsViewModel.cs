@@ -11,6 +11,6 @@ namespace WebMaze.Models.Friends
 
         public List<FriendViewModel> Friends { get; set; }
 
-        public List<FriendViewModel> FoundUsers { get; set; }
+        public List<FoundUserViewModel> FoundUsers { get; set; }
     }
 }

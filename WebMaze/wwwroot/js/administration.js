@@ -76,11 +76,26 @@
         var unindexed_array = $form.serializeArray();
         var indexed_array = {};
 
-        $.map(unindexed_array, function (n, i) {
-            indexed_array[n['name']] = n['value'];
+        $.map(unindexed_array, function (val, i) {
+            if (isFloat(val['value'])) {
+                indexed_array[val['name']] = parseFloat(val['value']);
+            } else {
+                indexed_array[val['name']] = val['value'];
+            }
         });
 
         return indexed_array;
+    }
+
+    function isFloat(val) {
+        var floatRegex = /^-?\d+(?:[.,]\d*?)?$/;
+        if (!floatRegex.test(val))
+            return false;
+
+        val = parseFloat(val);
+        if (isNaN(val))
+            return false;
+        return true;
     }
 
     function deleteItem(id) {
@@ -114,7 +129,8 @@
                     displayItems(items);
                 });
             },
-            function(jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.responseText);
                 console.log(textStatus, errorThrown);
             }
         });
