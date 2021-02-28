@@ -73,7 +73,7 @@
                                             <h5><span class="badge badge-info w-100">@task.StartDate.DayOfWeek.ToString()</span></h5>
                                             break;
                                         case TaskRelativeDate.Upcoming:
-                                            <h5><span class="badge badge-info w-100">@task.StartDate.DayOfYear.ToString()</span></h5>
+                                            <h5><span class="badge badge-info w-100">@task.StartDate.ToString("M")</span></h5>
                                             break;
                                         case TaskRelativeDate.Overdue:
                                             <h5><span class="badge badge-danger w-100">@task.RelativeDate.ToString()</span></h5>

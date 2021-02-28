@@ -80,13 +80,7 @@ namespace WebMaze.Controllers
         [AllowAnonymous]
         public IActionResult Registration()
         {
-            var viewModel = new RegistrationViewModel()
-            {
-                Login = "Test",
-                Password = "Test"
-            };
-
-            return View(viewModel);
+            return View(new RegistrationViewModel());
         }
 
         [HttpPost]

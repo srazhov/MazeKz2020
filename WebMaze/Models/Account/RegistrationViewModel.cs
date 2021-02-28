@@ -12,17 +12,17 @@ namespace WebMaze.Models.Account
     {
         public long Id { get; set; }
 
-        [MinLength(2, ErrorMessage = "Не бывает людей с именем из 2 букв")]
+        [MinLength(3, ErrorMessage = Constants.LoginTooShortErrorMessage)]
         [UniqUserName]
-        [DisplayName("Имя пользователя")]
         public string Login { get; set; }
 
-        [Required(ErrorMessage = "Пароль для пользователя очень важен. Не оставляйте поле пустым")]
-        [AtleastOneCapital(ErrorMessage = "Это другое сообщение про больую букву")]
-        [DisplayName("Пароль")]
+        [Required(ErrorMessage = Constants.PasswordIsEmptyErrorMessage)]
+        [MinLength(8, ErrorMessage = Constants.PasswordTooShortErrorMessage)]
+        [AtleastOneCapital]
+        [RegularExpression(@".*\d.*", ErrorMessage = Constants.PasswordMustContainDigit)]
         public string Password { get; set; }
 
-        [Compare("Password")]
+        [Compare(nameof(Password))]
         public string RepeatPassword { get; set; }
     }
 }

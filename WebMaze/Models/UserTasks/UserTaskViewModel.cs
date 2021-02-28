@@ -43,24 +43,23 @@ namespace WebMaze.Models.UserTasks
                 }
 
                 var difference = StartDate - DateTime.Now;
-                var differenceInDays = difference.Days;
-
-                switch (differenceInDays)
+                
+                if (difference > TimeSpan.FromDays(7))
                 {
-                    case 0:
-                        return TaskRelativeDate.Today;
-                    case 1:
-                        return TaskRelativeDate.Tomorrow;
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5:
-                    case 6:
-                    case 7:
-                        return TaskRelativeDate.NextSevenDays;
-                    default:
-                        return TaskRelativeDate.Upcoming;
+                    return TaskRelativeDate.Upcoming;
                 }
+
+                if (difference > TimeSpan.FromHours(48))
+                {
+                    return TaskRelativeDate.NextSevenDays;
+                }
+
+                if (difference > TimeSpan.FromHours(24))
+                {
+                    return TaskRelativeDate.Tomorrow;
+                }
+
+                return TaskRelativeDate.Today;
             }
         }
     }

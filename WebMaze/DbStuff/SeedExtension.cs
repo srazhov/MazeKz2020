@@ -60,7 +60,7 @@ namespace WebMaze.DbStuff
                 new CitizenUser
                 {
                     Login = "Bill",
-                    Password = "123",
+                    Password = "123456Qq",
                     AvatarUrl = "/image/avatar/bill.jpg",
                     Balance = 120000000000,
                     RegistrationDate = new DateTime(2020, 10, 1),

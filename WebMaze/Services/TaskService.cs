@@ -41,7 +41,7 @@ namespace WebMaze.Services
         {
             var tomorrowDate = DateTime.Today + TimeSpan.FromDays(1);
             var userTasks = userTaskRepository.GetTasksByUserLogin(userLogin).Where(task =>
-                task.Status == TaskStatus.Planned && task.StartDate.Date == tomorrowDate)
+                task.Status == TaskStatus.Planned && task.StartDate.Date == tomorrowDate.Date)
                 .OrderBy(task => task.StartDate);
 
             return userTasks.ToList();

@@ -490,7 +490,7 @@ namespace WebMaze.DbStuff
                 {
                     Name = "Create custom theme for site",
                     Description = "Find good theme in Internet and add it to website",
-                    StartDate = DateTime.Now + TimeSpan.FromDays(1),
+                    StartDate = DateTime.Now.Date + TimeSpan.FromDays(1),
                     Status = TaskStatus.Planned,
                     Priority = TaskPriority.Low,
                     Owner = bill
@@ -499,7 +499,7 @@ namespace WebMaze.DbStuff
                 {
                     Name = "Merge with upstream",
                     Description = "Pavel add new feature to the project. It should be pulled.",
-                    StartDate = DateTime.Now + TimeSpan.FromHours(30),
+                    StartDate = DateTime.Now.Date + TimeSpan.FromHours(30),
                     Status = TaskStatus.Planned,
                     Priority = TaskPriority.Medium,
                     Owner = bill
@@ -508,7 +508,7 @@ namespace WebMaze.DbStuff
                 {
                     Name = "Find the cause of the bug with database updating",
                     Description = "After last migration updates are not working",
-                    StartDate = DateTime.Now + TimeSpan.FromHours(31),
+                    StartDate = DateTime.Now.Date + TimeSpan.FromHours(31),
                     Status = TaskStatus.Planned,
                     Priority = TaskPriority.High,
                     Owner = bill
@@ -517,7 +517,7 @@ namespace WebMaze.DbStuff
                 {
                     Name = "Add unique constraint to login",
                     Description = "Login should be unique for whole database",
-                    StartDate = DateTime.Now + TimeSpan.FromHours(32),
+                    StartDate = DateTime.Now.Date + TimeSpan.FromHours(32),
                     Status = TaskStatus.Planned,
                     Priority = TaskPriority.High,
                     Owner = bill
@@ -526,7 +526,7 @@ namespace WebMaze.DbStuff
                 {
                     Name = "Implement policy-based authorization",
                     Description = "Create 2 policies: one for admins and one for users",
-                    StartDate = DateTime.Now + TimeSpan.FromHours(33),
+                    StartDate = DateTime.Now.Date + TimeSpan.FromHours(33),
                     Status = TaskStatus.Planned,
                     Priority = TaskPriority.High,
                     Owner = bill
